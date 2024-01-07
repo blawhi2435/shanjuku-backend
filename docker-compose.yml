@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres:16.1-alpine3.19
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: shanjuku
+      TZ: Asia/Taipei
+      PGTZ: Asia/Taipei
+    ports:
+      - "5432:5432"

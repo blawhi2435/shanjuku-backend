@@ -1,0 +1,13 @@
+postgre:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: 123456
+  database: shanjuku
+  timezone: Asia/Taipei
+gin:
+  address: localhost
+  port: 6969
+  is_tls: false
+  certificate_file: ""
+  key_file: ""
