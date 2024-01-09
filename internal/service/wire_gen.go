@@ -19,11 +19,11 @@ import (
 
 func InitService() (*Service, error) {
 	ginService := ProvideGinService()
-	postgreService, err := ProvidePostgreService()
+	postgresService, err := ProvidePostgreService()
 	if err != nil {
 		return nil, err
 	}
-	service := ProvideService(ginService, postgreService)
+	service := ProvideService(ginService, postgresService)
 	return service, nil
 }
 
@@ -37,11 +37,11 @@ func ProvideGinService() *GinService {
 	return &GinService{Engine: r}
 }
 
-func ProvidePostgreService() (*PostgreService, error) {
+func ProvidePostgreService() (*PostgresService, error) {
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s", enviroment.Setting.
-		Postgre.Host, enviroment.Setting.Postgre.User, enviroment.Setting.Postgre.Password, enviroment.Setting.
-		Postgre.Database, enviroment.Setting.Postgre.Port, enviroment.Setting.Postgre.TimeZone)
+		Postgres.Host, enviroment.Setting.Postgres.User, enviroment.Setting.Postgres.Password, enviroment.Setting.
+		Postgres.Database, enviroment.Setting.Postgres.Port, enviroment.Setting.Postgres.TimeZone)
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  dsn,
 		PreferSimpleProtocol: true,
@@ -51,9 +51,9 @@ func ProvidePostgreService() (*PostgreService, error) {
 		return nil, err
 	}
 
-	return &PostgreService{DB: db}, nil
+	return &PostgresService{DB: db}, nil
 }
 
-func ProvideService(g *GinService, p *PostgreService) *Service {
-	return &Service{GinService: g, PostgreService: p}
+func ProvideService(g *GinService, p *PostgresService) *Service {
+	return &Service{GinService: g, PostgresService: p}
 }

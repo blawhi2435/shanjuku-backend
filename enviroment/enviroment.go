@@ -1,18 +1,17 @@
 package enviroment
 
 import (
-
 	"github.com/spf13/viper"
 )
 
 var Setting Config
 
 type Config struct {
-	Postgre Postgre `json:"postgre"`
-	Gin     Gin     `json:"gin"`
+	Postgres Postgres `json:"postgres"`
+	Gin      Gin      `json:"gin"`
 }
 
-type Postgre struct {
+type Postgres struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	User     string `json:"user"`
@@ -28,6 +27,7 @@ type Gin struct {
 	CertificateFile string `json:"certificate_file"`
 	KeyFile         string `json:"key_file"`
 }
+
 func SetConfig() {
 	var c Config
 	err := viper.Unmarshal(&c)

@@ -2,6 +2,6 @@ package service
 
 import "gorm.io/gorm"
 
-type PostgreService struct {
+type PostgresService struct {
 	DB *gorm.DB
 }

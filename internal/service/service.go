@@ -1,6 +1,6 @@
 package service
 
 type Service struct {
-	GinService     *GinService
-	PostgreService *PostgreService
+	GinService      *GinService
+	PostgresService *PostgresService
 }
