@@ -1,4 +1,4 @@
-package postegre
+package postegres
 
 import "time"
 
