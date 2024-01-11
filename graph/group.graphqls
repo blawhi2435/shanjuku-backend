@@ -1,0 +1,10 @@
+type Group {
+  id: ID!
+  account: String!
+  name: String!
+  avatar: String!
+}
+
+extend type Query {
+  group(id: ID!): Group
+}

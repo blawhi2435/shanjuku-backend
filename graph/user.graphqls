@@ -1,0 +1,44 @@
+type User {
+  id: ID!
+  account: String!
+  name: String!
+  avatar: String!
+}
+
+extend type Query {
+  user(id: ID!): User
+}
+
+input RegisterInput {
+  account: String!
+  password: String!
+}
+
+input LoginInput {
+  account: String!
+  password: String!
+}
+
+input LogoutInput {
+  account: String!
+}
+
+type RegisterPayload {
+  id: ID!
+  token: String!
+}
+
+type LoginPayload {
+  id: ID!
+  token: String!
+}
+
+type LogoutPayload {
+  success: Boolean!
+}
+
+extend type Mutation {
+  register(input: RegisterInput!): RegisterPayload!
+  login(input: LoginInput!): LoginPayload!
+  logout(input: LogoutInput!) : LogoutPayload!
+}

@@ -11,3 +11,6 @@ gin:
   is_tls: false
   certificate_file: ""
   key_file: ""
+auth:
+  jwt_secret: "to-do-shanjuku"
+  password_prefix: "to-do-shanjuku"

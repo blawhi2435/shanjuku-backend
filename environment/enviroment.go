@@ -1,4 +1,4 @@
-package enviroment
+package environment
 
 import (
 	"github.com/spf13/viper"
@@ -9,6 +9,7 @@ var Setting Config
 type Config struct {
 	Postgres Postgres `json:"postgres"`
 	Gin      Gin      `json:"gin"`
+	Auth     Auth     `json:"auth"`
 }
 
 type Postgres struct {
@@ -26,6 +27,11 @@ type Gin struct {
 	IsTLS           bool   `json:"is_tls"`
 	CertificateFile string `json:"certificate_file"`
 	KeyFile         string `json:"key_file"`
+}
+
+type Auth struct {
+	JWTSecret      string `json:"jwt_secret"`
+	PasswordPrefix string `json:"password_prefix"`
 }
 
 func SetConfig() {

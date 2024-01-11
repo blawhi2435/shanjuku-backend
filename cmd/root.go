@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/blawhi2435/shanjuku-backend/enviroment"
+	"github.com/blawhi2435/shanjuku-backend/environment"
 	"github.com/blawhi2435/shanjuku-backend/internal"
 	"github.com/spf13/cobra"
 
@@ -40,7 +40,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) { 
+	Run: func(cmd *cobra.Command, args []string) {
 		internal.Init()
 	},
 }
@@ -88,5 +88,5 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	enviroment.SetConfig()
+	environment.SetConfig()
 }
