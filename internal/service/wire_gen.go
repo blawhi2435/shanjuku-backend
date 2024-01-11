@@ -18,10 +18,14 @@ func InitService() (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	service := ProvideService(ginService, postgresService)
+	loggerService, err := ProvideLogger()
+	if err != nil {
+		return nil, err
+	}
+	service := ProvideService(ginService, postgresService, loggerService)
 	return service, nil
 }
 
 // wire.go:
 
-var serviceSet = wire.NewSet(ProvideGinService, ProvidePostgreService, ProvideService)
+var serviceSet = wire.NewSet(ProvideGinService, ProvidePostgreService, ProvideLogger, ProvideService)

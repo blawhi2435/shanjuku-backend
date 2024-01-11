@@ -23,7 +23,7 @@ func Init() {
 
 func graphqlHandler(svc *service.Service) gin.HandlerFunc {
 
-	myResolver := InitResolver(svc.PostgresService.DB)
+	myResolver := InitResolver(svc.PostgresService.DB, svc.LoggerService)
 	
 	// NewExecutableSchema and Config are in the generated.go file
 	// Resolver is in the resolver.go file

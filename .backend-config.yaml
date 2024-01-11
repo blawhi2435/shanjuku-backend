@@ -8,9 +8,13 @@ postgres:
 gin:
   address: localhost
   port: 6969
-  is_tls: false
-  certificate_file: ""
-  key_file: ""
+  isTls: false
+  certificateFile: ""
+  keyFile: ""
+logger:
+  level: info
+  path: "./logs/"
+  fileName: "shanjuku"
 auth:
-  jwt_secret: "to-do-shanjuku"
-  password_prefix: "to-do-shanjuku"
+  jwtSecret: "to-do-shanjuku"
+  passwordPrefix: "to-do-shanjuku"

@@ -9,6 +9,7 @@ var Setting Config
 type Config struct {
 	Postgres Postgres `json:"postgres"`
 	Gin      Gin      `json:"gin"`
+	Logger	 Logger   `json:"logger"`
 	Auth     Auth     `json:"auth"`
 }
 
@@ -24,14 +25,20 @@ type Postgres struct {
 type Gin struct {
 	Address         string `json:"address"`
 	Port            string `json:"port"`
-	IsTLS           bool   `json:"is_tls"`
-	CertificateFile string `json:"certificate_file"`
-	KeyFile         string `json:"key_file"`
+	IsTLS           bool   `json:"isTls"`
+	CertificateFile string `json:"certificateFile"`
+	KeyFile         string `json:"keyFile"`
+}
+
+type Logger struct {
+	Level    string `json:"level"`
+	Path     string `json:"path"`
+	FileName string `json:"fileName"`
 }
 
 type Auth struct {
-	JWTSecret      string `json:"jwt_secret"`
-	PasswordPrefix string `json:"password_prefix"`
+	JWTSecret      string `json:"jwtSecret"`
+	PasswordPrefix string `json:"passwordPrefix"`
 }
 
 func SetConfig() {

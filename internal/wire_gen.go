@@ -11,17 +11,18 @@ import (
 	usecase2 "github.com/blawhi2435/shanjuku-backend/internal/app/auth/usecase"
 	"github.com/blawhi2435/shanjuku-backend/internal/app/user/repository/postgres"
 	"github.com/blawhi2435/shanjuku-backend/internal/app/user/usecase"
+	"github.com/blawhi2435/shanjuku-backend/internal/service"
 	"github.com/google/wire"
 	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
 
-func InitResolver(db *gorm.DB) *resolver.Resolver {
+func InitResolver(db *gorm.DB, logger *service.LoggerService) *resolver.Resolver {
 	userPostgreRepository := postgres.ProvideUserPostgresRepository(db)
 	userUsecase := usecase.ProvideUserUsecase(userPostgreRepository)
 	authUsecase := usecase2.ProvideAuthUsecase(userPostgreRepository, userUsecase)
-	resolverResolver := resolver.ProvideResolver(authUsecase)
+	resolverResolver := resolver.ProvideResolver(logger, authUsecase, userUsecase)
 	return resolverResolver
 }
 
