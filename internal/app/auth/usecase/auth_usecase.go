@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/blawhi2435/shanjuku-backend/domain"
 	"github.com/blawhi2435/shanjuku-backend/environment"
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
@@ -24,9 +26,9 @@ func ProvideAuthUsecase(
 	}
 }
 
-func (a *authUsecase) Register(user *domain.User) (domain.User, error) {
+func (a *authUsecase) Register(ctx context.Context, user *domain.User) (domain.User, error) {
 
-	isUserExist, err := a.userUsecase.IsUserExist(user.Account)
+	isUserExist, err := a.userUsecase.IsUserExist(ctx, user.Account)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -45,7 +47,7 @@ func (a *authUsecase) Register(user *domain.User) (domain.User, error) {
 	user.ID = id
 	user.Password = passwordHashed
 
-	err = a.userRepository.InsertNewUser(user)
+	err = a.userRepository.InsertNewUser(ctx, user)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -60,9 +62,9 @@ func (a *authUsecase) Register(user *domain.User) (domain.User, error) {
 	return *user, nil
 }
 
-func (a *authUsecase) Login(account, password string) (domain.User, error) {
+func (a *authUsecase) Login(ctx context.Context, account, password string) (domain.User, error) {
 
-	user, err := a.userRepository.QueryByAccount(account)
+	user, err := a.userRepository.QueryByAccount(ctx, account)
 	if err == gorm.ErrRecordNotFound {
 		return domain.User{}, cerror.ErrAccountOrPasswordNotMatch
 	}
@@ -81,9 +83,9 @@ func (a *authUsecase) Login(account, password string) (domain.User, error) {
 	return user, nil
 }
 
-func (a *authUsecase) Logout(account string) error {
+func (a *authUsecase) Logout(ctx context.Context, account string) error {
 	
-	isUserExist, err := a.userUsecase.IsUserExist(account)
+	isUserExist, err := a.userUsecase.IsUserExist(ctx, account)
 	if err != nil {
 		return err
 	}

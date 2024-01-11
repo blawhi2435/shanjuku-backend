@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/blawhi2435/shanjuku-backend/domain"
 	"gorm.io/gorm"
 )
@@ -13,8 +15,8 @@ func ProvideUserUsecase(userRepository domain.UserPostgreRepository) domain.User
 	return &UserUsecase{userRepository}
 }
 
-func (u *UserUsecase) IsUserExist(account string) (bool, error) {
-	_, err := u.userRepository.QueryByAccount(account)
+func (u *UserUsecase) IsUserExist(ctx context.Context, account string) (bool, error) {
+	_, err := u.userRepository.QueryByAccount(ctx, account)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return false, nil
