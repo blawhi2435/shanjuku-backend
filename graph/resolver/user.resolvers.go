@@ -7,14 +7,33 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"strconv"
 
+	"github.com/blawhi2435/shanjuku-backend/domain"
 	"github.com/blawhi2435/shanjuku-backend/graph"
 	"github.com/blawhi2435/shanjuku-backend/graph/model"
+	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
 )
 
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInput) (*model.RegisterPayload, error) {
-	panic(fmt.Errorf("not implemented: Register - register"))
+	
+	var response *model.RegisterPayload = &model.RegisterPayload{}
+
+	user, err := r.AuthUsecasse.Register(ctx, &domain.User{
+		Account:  input.Account,
+		Password: input.Password,
+	})
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	response = &model.RegisterPayload{
+		ID: 		strconv.FormatInt(user.ID, 10),
+		Token: 	user.Token,
+	}
+	
+	return response, nil
 }
 
 // Login is the resolver for the login field.

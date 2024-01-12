@@ -6,8 +6,8 @@ import (
 	"github.com/blawhi2435/shanjuku-backend/domain"
 	"github.com/blawhi2435/shanjuku-backend/environment"
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
-	"github.com/blawhi2435/shanjuku-backend/jwt"
-	"github.com/blawhi2435/shanjuku-backend/util"
+	"github.com/blawhi2435/shanjuku-backend/internal/jwt"
+	"github.com/blawhi2435/shanjuku-backend/internal/util"
 	"gorm.io/gorm"
 )
 

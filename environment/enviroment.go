@@ -1,6 +1,8 @@
 package environment
 
 import (
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -49,4 +51,5 @@ func SetConfig() {
 	}
 
 	Setting = c
+	fmt.Printf("Setting: %+v\n", Setting)
 }
