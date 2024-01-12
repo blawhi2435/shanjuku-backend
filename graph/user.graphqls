@@ -10,8 +10,8 @@ extend type Query {
 }
 
 input RegisterInput {
-  account: String!
-  password: String!
+  account: String! @binding(constraint: "required,max=32")
+  password: String! @binding(constraint: "required,max=32")
 }
 
 input LoginInput {

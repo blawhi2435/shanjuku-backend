@@ -17,7 +17,6 @@ import (
 
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInput) (*model.RegisterPayload, error) {
-	
 	var response *model.RegisterPayload = &model.RegisterPayload{}
 
 	user, err := r.AuthUsecasse.Register(ctx, &domain.User{
@@ -29,10 +28,10 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 	}
 
 	response = &model.RegisterPayload{
-		ID: 		strconv.FormatInt(user.ID, 10),
-		Token: 	user.Token,
+		ID:    strconv.FormatInt(user.ID, 10),
+		Token: user.Token,
 	}
-	
+
 	return response, nil
 }
 

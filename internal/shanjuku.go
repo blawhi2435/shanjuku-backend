@@ -4,6 +4,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/blawhi2435/shanjuku-backend/graph"
+	"github.com/blawhi2435/shanjuku-backend/graph/directive"
 	"github.com/blawhi2435/shanjuku-backend/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +28,9 @@ func graphqlHandler(svc *service.Service) gin.HandlerFunc {
 	
 	// NewExecutableSchema and Config are in the generated.go file
 	// Resolver is in the resolver.go file
-	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: myResolver}))
+	graphConfig := graph.Config{Resolvers: myResolver}
+	graphConfig.Directives.Binding = directive.Binding
+	h := handler.NewDefaultServer(graph.NewExecutableSchema(graphConfig))
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
