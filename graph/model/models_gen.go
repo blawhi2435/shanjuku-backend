@@ -15,7 +15,7 @@ type LoginInput struct {
 }
 
 type LoginPayload struct {
-	ID    string `json:"id"`
+	User  *User  `json:"user"`
 	Token string `json:"token"`
 }
 
@@ -39,7 +39,7 @@ type RegisterInput struct {
 }
 
 type RegisterPayload struct {
-	ID    string `json:"id"`
+	User  *User  `json:"user"`
 	Token string `json:"token"`
 }
 

@@ -7,10 +7,10 @@ package resolver
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/blawhi2435/shanjuku-backend/domain"
 	"github.com/blawhi2435/shanjuku-backend/graph"
+	"github.com/blawhi2435/shanjuku-backend/graph/mapper"
 	"github.com/blawhi2435/shanjuku-backend/graph/model"
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
 )
@@ -27,8 +27,10 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 		return response, cerror.GetGQLError(ctx, err)
 	}
 
+	modelUser := mapper.MappingUserDomainToModel(user)
+
 	response = &model.RegisterPayload{
-		ID:    strconv.FormatInt(user.ID, 10),
+		User:  modelUser,
 		Token: user.Token,
 	}
 
@@ -44,8 +46,10 @@ func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (*
 		return response, cerror.GetGQLError(ctx, err)
 	}
 
+	modelUser := mapper.MappingUserDomainToModel(user)
+
 	response = &model.LoginPayload{
-		ID:    strconv.FormatInt(user.ID, 10),
+		User:  modelUser,
 		Token: user.Token,
 	}
 
@@ -64,7 +68,7 @@ func (r *mutationResolver) Logout(ctx context.Context, input model.LogoutInput) 
 	response = &model.LogoutPayload{
 		Success: true,
 	}
-	
+
 	return response, nil
 }
 

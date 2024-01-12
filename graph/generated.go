@@ -56,8 +56,8 @@ type ComplexityRoot struct {
 	}
 
 	LoginPayload struct {
-		ID    func(childComplexity int) int
 		Token func(childComplexity int) int
+		User  func(childComplexity int) int
 	}
 
 	LogoutPayload struct {
@@ -76,8 +76,8 @@ type ComplexityRoot struct {
 	}
 
 	RegisterPayload struct {
-		ID    func(childComplexity int) int
 		Token func(childComplexity int) int
+		User  func(childComplexity int) int
 	}
 
 	User struct {
@@ -145,19 +145,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Group.Name(childComplexity), true
 
-	case "LoginPayload.id":
-		if e.complexity.LoginPayload.ID == nil {
-			break
-		}
-
-		return e.complexity.LoginPayload.ID(childComplexity), true
-
 	case "LoginPayload.token":
 		if e.complexity.LoginPayload.Token == nil {
 			break
 		}
 
 		return e.complexity.LoginPayload.Token(childComplexity), true
+
+	case "LoginPayload.user":
+		if e.complexity.LoginPayload.User == nil {
+			break
+		}
+
+		return e.complexity.LoginPayload.User(childComplexity), true
 
 	case "LogoutPayload.success":
 		if e.complexity.LogoutPayload.Success == nil {
@@ -226,19 +226,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.User(childComplexity, args["id"].(string)), true
 
-	case "RegisterPayload.id":
-		if e.complexity.RegisterPayload.ID == nil {
-			break
-		}
-
-		return e.complexity.RegisterPayload.ID(childComplexity), true
-
 	case "RegisterPayload.token":
 		if e.complexity.RegisterPayload.Token == nil {
 			break
 		}
 
 		return e.complexity.RegisterPayload.Token(childComplexity), true
+
+	case "RegisterPayload.user":
+		if e.complexity.RegisterPayload.User == nil {
+			break
+		}
+
+		return e.complexity.RegisterPayload.User(childComplexity), true
 
 	case "User.account":
 		if e.complexity.User.Account == nil {
@@ -716,8 +716,8 @@ func (ec *executionContext) fieldContext_Group_avatar(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _LoginPayload_id(ctx context.Context, field graphql.CollectedField, obj *model.LoginPayload) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_LoginPayload_id(ctx, field)
+func (ec *executionContext) _LoginPayload_user(ctx context.Context, field graphql.CollectedField, obj *model.LoginPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginPayload_user(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -730,7 +730,7 @@ func (ec *executionContext) _LoginPayload_id(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.User, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -742,19 +742,29 @@ func (ec *executionContext) _LoginPayload_id(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_LoginPayload_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_LoginPayload_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "LoginPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "account":
+				return ec.fieldContext_User_account(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "avatar":
+				return ec.fieldContext_User_avatar(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	return fc, nil
@@ -887,8 +897,8 @@ func (ec *executionContext) fieldContext_Mutation_register(ctx context.Context, 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_RegisterPayload_id(ctx, field)
+			case "user":
+				return ec.fieldContext_RegisterPayload_user(ctx, field)
 			case "token":
 				return ec.fieldContext_RegisterPayload_token(ctx, field)
 			}
@@ -948,8 +958,8 @@ func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_LoginPayload_id(ctx, field)
+			case "user":
+				return ec.fieldContext_LoginPayload_user(ctx, field)
 			case "token":
 				return ec.fieldContext_LoginPayload_token(ctx, field)
 			}
@@ -1282,8 +1292,8 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _RegisterPayload_id(ctx context.Context, field graphql.CollectedField, obj *model.RegisterPayload) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_RegisterPayload_id(ctx, field)
+func (ec *executionContext) _RegisterPayload_user(ctx context.Context, field graphql.CollectedField, obj *model.RegisterPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegisterPayload_user(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1296,7 +1306,7 @@ func (ec *executionContext) _RegisterPayload_id(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.User, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1308,19 +1318,29 @@ func (ec *executionContext) _RegisterPayload_id(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_RegisterPayload_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RegisterPayload_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RegisterPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "account":
+				return ec.fieldContext_User_account(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "avatar":
+				return ec.fieldContext_User_avatar(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	return fc, nil
@@ -3572,8 +3592,8 @@ func (ec *executionContext) _LoginPayload(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("LoginPayload")
-		case "id":
-			out.Values[i] = ec._LoginPayload_id(ctx, field, obj)
+		case "user":
+			out.Values[i] = ec._LoginPayload_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -3806,8 +3826,8 @@ func (ec *executionContext) _RegisterPayload(ctx context.Context, sel ast.Select
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("RegisterPayload")
-		case "id":
-			out.Values[i] = ec._RegisterPayload_id(ctx, field, obj)
+		case "user":
+			out.Values[i] = ec._RegisterPayload_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4319,6 +4339,16 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
