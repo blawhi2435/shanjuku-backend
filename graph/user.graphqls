@@ -15,12 +15,12 @@ input RegisterInput {
 }
 
 input LoginInput {
-  account: String!
-  password: String!
+  account: String! @binding(constraint: "required,max=32")
+  password: String! @binding(constraint: "required,max=32")
 }
 
 input LogoutInput {
-  account: String!
+  account: String! @binding(constraint: "required,max=32")
 }
 
 type RegisterPayload {
@@ -40,5 +40,5 @@ type LogoutPayload {
 extend type Mutation {
   register(input: RegisterInput!): RegisterPayload!
   login(input: LoginInput!): LoginPayload!
-  logout(input: LogoutInput!) : LogoutPayload!
+  logout(input: LogoutInput!): LogoutPayload!
 }

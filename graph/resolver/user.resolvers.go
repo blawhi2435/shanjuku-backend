@@ -37,12 +37,35 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (*model.LoginPayload, error) {
-	panic(fmt.Errorf("not implemented: Login - login"))
+	var response *model.LoginPayload = &model.LoginPayload{}
+
+	user, err := r.AuthUsecasse.Login(ctx, input.Account, input.Password)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	response = &model.LoginPayload{
+		ID:    strconv.FormatInt(user.ID, 10),
+		Token: user.Token,
+	}
+
+	return response, nil
 }
 
 // Logout is the resolver for the logout field.
 func (r *mutationResolver) Logout(ctx context.Context, input model.LogoutInput) (*model.LogoutPayload, error) {
-	panic(fmt.Errorf("not implemented: Logout - logout"))
+	var response *model.LogoutPayload = &model.LogoutPayload{}
+
+	err := r.AuthUsecasse.Logout(ctx, input.Account)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	response = &model.LogoutPayload{
+		Success: true,
+	}
+	
+	return response, nil
 }
 
 // User is the resolver for the user field.

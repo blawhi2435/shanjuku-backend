@@ -80,6 +80,12 @@ func (a *authUsecase) Login(ctx context.Context, account, password string) (doma
 		return domain.User{}, cerror.ErrAccountOrPasswordNotMatch
 	}
 
+	token, err := jwt.GenToken(jwt.PayloadData{
+		UserID:  user.ID,
+		Account: user.Account,
+	})
+	user.Token = token
+
 	return user, nil
 }
 

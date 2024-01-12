@@ -3335,18 +3335,52 @@ func (ec *executionContext) unmarshalInputLoginInput(ctx context.Context, obj in
 		switch k {
 		case "account":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("account"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNString2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required,max=32")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
 			}
-			it.Account = data
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Account = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
 		case "password":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNString2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required,max=32")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
 			}
-			it.Password = data
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Password = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
 		}
 	}
 
@@ -3369,11 +3403,28 @@ func (ec *executionContext) unmarshalInputLogoutInput(ctx context.Context, obj i
 		switch k {
 		case "account":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("account"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNString2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required,max=32")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
 			}
-			it.Account = data
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Account = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
 		}
 	}
 
