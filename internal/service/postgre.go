@@ -26,5 +26,7 @@ func ProvidePostgreService() (*PostgresService, error) {
 		return nil, err
 	}
 
+	db = db.Debug()
+
 	return &PostgresService{DB: db}, nil
 }

@@ -9,8 +9,7 @@ import (
 	"fmt"
 
 	"github.com/blawhi2435/shanjuku-backend/domain"
-	"github.com/blawhi2435/shanjuku-backend/graph"
-	"github.com/blawhi2435/shanjuku-backend/graph/mapper"
+	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphql"
 	"github.com/blawhi2435/shanjuku-backend/graph/model"
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
 )
@@ -27,7 +26,7 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 		return response, cerror.GetGQLError(ctx, err)
 	}
 
-	modelUser := mapper.MappingUserDomainToModel(user)
+	modelUser := graphql.MappingUserDomainToGraphqlModel(user)
 
 	response = &model.RegisterPayload{
 		User:  modelUser,
@@ -46,7 +45,7 @@ func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (*
 		return response, cerror.GetGQLError(ctx, err)
 	}
 
-	modelUser := mapper.MappingUserDomainToModel(user)
+	modelUser := graphql.MappingUserDomainToGraphqlModel(user)
 
 	response = &model.LoginPayload{
 		User:  modelUser,
@@ -76,8 +75,3 @@ func (r *mutationResolver) Logout(ctx context.Context, input model.LogoutInput) 
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: User - user"))
 }
-
-// Mutation returns graph.MutationResolver implementation.
-func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
-
-type mutationResolver struct{ *Resolver }

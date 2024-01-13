@@ -19,8 +19,10 @@ func (e Error) Error() string {
 var (
 	ErrAccountOrPasswordNotMatch = Error{Code: "A0001", Message: "account or password not match"}
 	ErrAccountAlreadyExist       = Error{Code: "A0002", Message: "account already exist"}
-	ErrTokenExpired              = Error{Code: "A0003", Message: "token expired"}
+	ErrTokenInvalid              = Error{Code: "A0003", Message: "token invalid"}
+	ErrGroupNotBelongToUser      = Error{Code: "G0001", Message: "group not belong to user"}
 	ErrInternalServerError       = Error{Code: "S0001", Message: "internal server error"}
+	ErrGetContextFailed          = Error{Code: "S0002", Message: "get context failed"}
 )
 
 func GetGQLError(ctx context.Context, e error) error {
@@ -30,9 +32,9 @@ func GetGQLError(ctx context.Context, e error) error {
 	case
 		ErrAccountOrPasswordNotMatch,
 		ErrAccountAlreadyExist,
-		ErrTokenExpired:
+		ErrTokenInvalid,
+		ErrGetContextFailed:
 
-		
 		gqlErr.Err = e
 		gqlErr.Message = e.(Error).Message
 		gqlErr.Extensions = map[string]interface{}{
@@ -48,6 +50,6 @@ func GetGQLError(ctx context.Context, e error) error {
 
 	errorList := gqlerror.List{}
 	errorList = append(errorList, &gqlErr)
-	
+
 	return errorList
 }

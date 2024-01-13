@@ -8,16 +8,72 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/blawhi2435/shanjuku-backend/domain"
 	"github.com/blawhi2435/shanjuku-backend/graph"
 	"github.com/blawhi2435/shanjuku-backend/graph/model"
+	"github.com/blawhi2435/shanjuku-backend/internal/contextkey"
+	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphql"
+	"github.com/blawhi2435/shanjuku-backend/internal/middleware"
 )
+
+// CreateGroup is the resolver for the createGroup field.
+func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGroupInput) (*model.CreateGroupPayload, error) {
+	var response *model.CreateGroupPayload
+
+	gctx, err := middleware.GinContextFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	token := gctx.GetString(contextkey.TokenCtxKey)
+	ctx = context.WithValue(ctx, contextkey.TokenCtxKey, token)
+
+	group, err := r.GroupUsecase.CreateGroup(ctx, &domain.Group{
+		Name: input.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	modelGroup := graphql.MappingGroupDomainToGraphqlModel(group)
+
+	response = &model.CreateGroupPayload{
+		Group: modelGroup,
+	}
+
+	return response, nil
+}
+
+// EditGroup is the resolver for the editGroup field.
+func (r *mutationResolver) EditGroup(ctx context.Context, input model.EditGroupInput) (*model.EditGroupPayload, error) {
+	panic(fmt.Errorf("not implemented: EditGroup - editGroup"))
+}
+
+// DeleteGroup is the resolver for the deleteGroup field.
+func (r *mutationResolver) DeleteGroup(ctx context.Context, input *model.DeleteGroupInput) (*model.DeleteGroupPayload, error) {
+	panic(fmt.Errorf("not implemented: DeleteGroup - deleteGroup"))
+}
+
+// InviteUser is the resolver for the inviteUser field.
+func (r *mutationResolver) InviteUser(ctx context.Context, input model.InviteUserInput) (*model.InviteUserPayload, error) {
+	panic(fmt.Errorf("not implemented: InviteUser - inviteUser"))
+}
+
+// RemoveUser is the resolver for the removeUser field.
+func (r *mutationResolver) RemoveUser(ctx context.Context, input model.RemoveUserInput) (*model.RemoveUserPayload, error) {
+	panic(fmt.Errorf("not implemented: RemoveUser - removeUser"))
+}
 
 // Group is the resolver for the group field.
 func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, error) {
 	panic(fmt.Errorf("not implemented: Group - group"))
 }
 
+// Mutation returns graph.MutationResolver implementation.
+func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
+
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

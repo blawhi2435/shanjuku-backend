@@ -1,10 +1,59 @@
 type Group {
   id: ID!
-  account: String!
   name: String!
-  avatar: String!
 }
 
 extend type Query {
   group(id: ID!): Group
+}
+
+input CreateGroupInput {
+  name: String! @binding(constraint: "required,max=32")
+}
+
+type CreateGroupPayload {
+  group: Group!
+}
+
+input EditGroupInput {
+  id: ID! @binding(constraint: "required")
+  name: String! @binding(constraint: "required,max=32")
+}
+
+type EditGroupPayload {
+  group: Group
+}
+
+input DeleteGroupInput {
+  id: ID! @binding(constraint: "required")
+}
+
+type DeleteGroupPayload {
+  success: Boolean!
+}
+
+input InviteUserInput {
+  groupId: ID! @binding(constraint: "required")
+  userId: [ID!]! @binding(constraint: "required,min=1")
+}
+
+type InviteUserPayload {
+  user: [User!]!
+}
+
+input RemoveUserInput {
+  groupId: ID!
+  userId: ID!
+}
+
+type RemoveUserPayload {
+  success: Boolean!
+}
+
+extend type Mutation {
+  createGroup(input: CreateGroupInput!): CreateGroupPayload
+  editGroup(input: EditGroupInput!): EditGroupPayload
+  deleteGroup(input: DeleteGroupInput): DeleteGroupPayload
+  inviteUser(input: InviteUserInput!): InviteUserPayload
+  removeUser(input: RemoveUserInput!): RemoveUserPayload
 }

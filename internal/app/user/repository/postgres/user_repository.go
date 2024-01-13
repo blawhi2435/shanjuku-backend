@@ -5,6 +5,7 @@ import (
 
 	"github.com/blawhi2435/shanjuku-backend/database/postgres"
 	"github.com/blawhi2435/shanjuku-backend/domain"
+	"github.com/blawhi2435/shanjuku-backend/internal/mapper/repository"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,7 @@ func ProvideUserPostgresRepository(db *gorm.DB) domain.UserPostgreRepository {
 
 func (u *userPostgresRepository) InsertNewUser(ctx context.Context, user *domain.User) error {
 
-	schemaUser := mappingDomainToSchema(user)
+	schemaUser := repository.MappingUserDomainToSchema(user)
 	orm := u.db.Model(&schemaUser)
 	res := orm.Select("id", "account", "password").
 		Create(&schemaUser)
@@ -33,5 +34,5 @@ func (u *userPostgresRepository) QueryByAccount(ctx context.Context, account str
 		Where("account = ?", account).
 		Take(&schemaUser)
 
-	return mappingSchemaToDomain(&schemaUser), res.Error
+	return repository.MappingUserSchemaToDomain(&schemaUser), res.Error
 }

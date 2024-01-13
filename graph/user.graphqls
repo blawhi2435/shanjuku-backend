@@ -14,23 +14,23 @@ input RegisterInput {
   password: String! @binding(constraint: "required,max=32")
 }
 
-input LoginInput {
-  account: String! @binding(constraint: "required,max=32")
-  password: String! @binding(constraint: "required,max=32")
-}
-
-input LogoutInput {
-  account: String! @binding(constraint: "required,max=32")
-}
-
 type RegisterPayload {
   user: User!
   token: String!
 }
 
+input LoginInput {
+  account: String! @binding(constraint: "required,max=32")
+  password: String! @binding(constraint: "required,max=32")
+}
+
 type LoginPayload {
   user: User!
   token: String!
+}
+
+input LogoutInput {
+  account: String! @binding(constraint: "required,max=32")
 }
 
 type LogoutPayload {

@@ -9,6 +9,8 @@ package internal
 import (
 	"github.com/blawhi2435/shanjuku-backend/graph/resolver"
 	usecase2 "github.com/blawhi2435/shanjuku-backend/internal/app/auth/usecase"
+	postgres2 "github.com/blawhi2435/shanjuku-backend/internal/app/group/repository/postgres"
+	usecase3 "github.com/blawhi2435/shanjuku-backend/internal/app/group/usecase"
 	"github.com/blawhi2435/shanjuku-backend/internal/app/user/repository/postgres"
 	"github.com/blawhi2435/shanjuku-backend/internal/app/user/usecase"
 	"github.com/blawhi2435/shanjuku-backend/internal/service"
@@ -22,7 +24,9 @@ func InitResolver(db *gorm.DB, logger *service.LoggerService) *resolver.Resolver
 	userPostgreRepository := postgres.ProvideUserPostgresRepository(db)
 	userUsecase := usecase.ProvideUserUsecase(userPostgreRepository)
 	authUsecase := usecase2.ProvideAuthUsecase(userPostgreRepository, userUsecase)
-	resolverResolver := resolver.ProvideResolver(logger, authUsecase, userUsecase)
+	groupPostgreRepository := postgres2.ProvideGroupPostgresRepository(db)
+	groupUsecase := usecase3.ProvideGroupUsecase(groupPostgreRepository, userPostgreRepository)
+	resolverResolver := resolver.ProvideResolver(logger, authUsecase, userUsecase, groupUsecase)
 	return resolverResolver
 }
 
@@ -30,4 +34,4 @@ func InitResolver(db *gorm.DB, logger *service.LoggerService) *resolver.Resolver
 
 var resolverSet = wire.NewSet(resolver.ProvideResolver)
 
-var usecaseSet = wire.NewSet(postgres.ProvideUserPostgresRepository, usecase.ProvideUserUsecase, usecase2.ProvideAuthUsecase)
+var usecaseSet = wire.NewSet(postgres.ProvideUserPostgresRepository, postgres2.ProvideGroupPostgresRepository, usecase.ProvideUserUsecase, usecase2.ProvideAuthUsecase, usecase3.ProvideGroupUsecase)

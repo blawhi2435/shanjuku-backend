@@ -2,11 +2,43 @@
 
 package model
 
+type CreateGroupInput struct {
+	Name string `json:"name"`
+}
+
+type CreateGroupPayload struct {
+	Group *Group `json:"group"`
+}
+
+type DeleteGroupInput struct {
+	ID string `json:"id"`
+}
+
+type DeleteGroupPayload struct {
+	Success bool `json:"success"`
+}
+
+type EditGroupInput struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type EditGroupPayload struct {
+	Group *Group `json:"group,omitempty"`
+}
+
 type Group struct {
-	ID      string `json:"id"`
-	Account string `json:"account"`
-	Name    string `json:"name"`
-	Avatar  string `json:"avatar"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type InviteUserInput struct {
+	GroupID string   `json:"groupId"`
+	UserID  []string `json:"userId"`
+}
+
+type InviteUserPayload struct {
+	User []*User `json:"user"`
 }
 
 type LoginInput struct {
@@ -41,6 +73,15 @@ type RegisterInput struct {
 type RegisterPayload struct {
 	User  *User  `json:"user"`
 	Token string `json:"token"`
+}
+
+type RemoveUserInput struct {
+	GroupID string `json:"groupId"`
+	UserID  string `json:"userId"`
+}
+
+type RemoveUserPayload struct {
+	Success bool `json:"success"`
 }
 
 type User struct {
