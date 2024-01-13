@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/blawhi2435/shanjuku-backend/environment"
 	"gorm.io/driver/postgres"
@@ -20,7 +21,11 @@ func ProvidePostgreService() (*PostgresService, error) {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  dsn,
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		NowFunc: func() time.Time {
+			return time.Now().In(time.FixedZone("UTC", 8*60*60))
+		},
+	})
 
 	if err != nil {
 		return nil, err
