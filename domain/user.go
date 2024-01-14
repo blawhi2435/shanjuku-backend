@@ -14,10 +14,12 @@ type User struct {
 type UserPostgreRepository interface {
 	InsertNewUser(ctx context.Context, user *User) error
 	QueryByAccount(ctx context.Context, account string) (User, error)
+	QueryByIDs(ctx context.Context, ids []int64) ([]User, error)
 }
 
 type UserUsecase interface {
-	IsUserExist(ctx context.Context, account string) (bool, error)
+	IsUserExistByIDs(ctx context.Context, id []int64) (bool, error)
+	IsUserExistByAccount(ctx context.Context, account string) (bool, error)
 }
 
 type AuthUsecase interface {

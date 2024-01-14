@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
-	"github.com/blawhi2435/shanjuku-backend/internal/contextkey"
+	"github.com/blawhi2435/shanjuku-backend/internal/ctxtool"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +27,7 @@ func AuthMiddleware() func(c *gin.Context) {
 
 		token := parts[1]
 		// parts[0] is Bearer, parts[1] is token.
-		c.Set(contextkey.TokenCtxKey, token)
+		c.Set(ctxtool.TokenCtxKey, token)
 		c.Next()
 	}
 }

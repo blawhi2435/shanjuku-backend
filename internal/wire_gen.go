@@ -9,7 +9,8 @@ package internal
 import (
 	"github.com/blawhi2435/shanjuku-backend/graph/resolver"
 	usecase2 "github.com/blawhi2435/shanjuku-backend/internal/app/auth/usecase"
-	postgres2 "github.com/blawhi2435/shanjuku-backend/internal/app/group/repository/postgres"
+	postgres2 "github.com/blawhi2435/shanjuku-backend/internal/app/db/repository/postgres"
+	postgres3 "github.com/blawhi2435/shanjuku-backend/internal/app/group/repository/postgres"
 	usecase3 "github.com/blawhi2435/shanjuku-backend/internal/app/group/usecase"
 	"github.com/blawhi2435/shanjuku-backend/internal/app/user/repository/postgres"
 	"github.com/blawhi2435/shanjuku-backend/internal/app/user/usecase"
@@ -24,8 +25,9 @@ func InitResolver(db *gorm.DB, logger *service.LoggerService) *resolver.Resolver
 	userPostgreRepository := postgres.ProvideUserPostgresRepository(db)
 	userUsecase := usecase.ProvideUserUsecase(userPostgreRepository)
 	authUsecase := usecase2.ProvideAuthUsecase(userPostgreRepository, userUsecase)
-	groupPostgreRepository := postgres2.ProvideGroupPostgresRepository(db)
-	groupUsecase := usecase3.ProvideGroupUsecase(groupPostgreRepository, userPostgreRepository)
+	dbRepository := postgres2.ProvideDBRepository(db)
+	groupPostgreRepository := postgres3.ProvideGroupPostgresRepository(db)
+	groupUsecase := usecase3.ProvideGroupUsecase(dbRepository, groupPostgreRepository, userPostgreRepository, userUsecase)
 	resolverResolver := resolver.ProvideResolver(logger, authUsecase, userUsecase, groupUsecase)
 	return resolverResolver
 }
@@ -34,4 +36,4 @@ func InitResolver(db *gorm.DB, logger *service.LoggerService) *resolver.Resolver
 
 var resolverSet = wire.NewSet(resolver.ProvideResolver)
 
-var usecaseSet = wire.NewSet(postgres.ProvideUserPostgresRepository, postgres2.ProvideGroupPostgresRepository, usecase.ProvideUserUsecase, usecase2.ProvideAuthUsecase, usecase3.ProvideGroupUsecase)
+var usecaseSet = wire.NewSet(postgres2.ProvideDBRepository, postgres.ProvideUserPostgresRepository, postgres3.ProvideGroupPostgresRepository, usecase.ProvideUserUsecase, usecase2.ProvideAuthUsecase, usecase3.ProvideGroupUsecase)

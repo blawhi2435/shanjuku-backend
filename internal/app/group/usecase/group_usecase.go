@@ -10,17 +10,23 @@ import (
 )
 
 type groupUsecase struct {
+	dbRepository    domain.DBRepository
 	groupRepository domain.GroupPostgreRepository
 	userRepository  domain.UserPostgreRepository
+	userUsecase     domain.UserUsecase
 }
 
 func ProvideGroupUsecase(
+	dbRepository domain.DBRepository,
 	groupRepository domain.GroupPostgreRepository,
 	userRepository domain.UserPostgreRepository,
-	) domain.GroupUsecase {
+	userUsecase domain.UserUsecase,
+) domain.GroupUsecase {
 	return &groupUsecase{
+		dbRepository,
 		groupRepository,
 		userRepository,
+		userUsecase,
 	}
 }
 
@@ -53,10 +59,16 @@ func (g *groupUsecase) UpdateGroup(ctx context.Context, group *domain.Group) (do
 		return domain.Group{}, cerror.ErrTokenInvalid
 	}
 
-	if ok, err := g.IsBelongToUser(ctx, group.ID, tokenPayload.UserID); err != nil {
+	if ok, err := g.IsGroupExist(ctx, group.ID); err != nil {
 		return domain.Group{}, err
 	} else if !ok {
-		return domain.Group{}, cerror.ErrGroupNotBelongToUser
+		return domain.Group{}, cerror.ErrGroupNotExist
+	}
+
+	if ok, err := g.IsGroupHasUsers(ctx, group.ID, []int64{tokenPayload.UserID}); err != nil {
+		return domain.Group{}, err
+	} else if !ok {
+		return domain.Group{}, cerror.ErrUserNotInGroup
 	}
 
 	_, err := g.groupRepository.UpdateGroup(ctx, group)
@@ -75,14 +87,32 @@ func (g *groupUsecase) DeleteGroup(ctx context.Context, groupID int64) error {
 		return cerror.ErrTokenInvalid
 	}
 
+	if ok, err := g.IsGroupExist(ctx, groupID); err != nil {
+		return err
+	} else if !ok {
+		return cerror.ErrGroupNotExist
+	}
+
 	if ok, err := g.IsBelongToUser(ctx, groupID, tokenPayload.UserID); err != nil {
 		return err
 	} else if !ok {
 		return cerror.ErrGroupNotBelongToUser
 	}
 
-	err := g.groupRepository.DeleteGroup(ctx, groupID)
-	if err != nil {
+	if err := g.dbRepository.Transaction(func(i interface{}) error {
+
+		err := g.groupRepository.ClearUserInGroupWithTx(ctx, i, groupID)
+		if err != nil {
+			return err
+		}
+
+		err = g.groupRepository.DeleteGroupWithTx(ctx, i, groupID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		return err
 	}
 
@@ -95,10 +125,28 @@ func (g *groupUsecase) InviteUser(ctx context.Context, groupID int64, userIDs []
 		return []domain.User{}, cerror.ErrTokenInvalid
 	}
 
-	if ok, err := g.IsBelongToUser(ctx, groupID, tokenPayload.UserID); err != nil {
+	if ok, err := g.IsGroupExist(ctx, groupID); err != nil {
 		return []domain.User{}, err
 	} else if !ok {
-		return []domain.User{}, cerror.ErrGroupNotBelongToUser
+		return []domain.User{}, cerror.ErrGroupNotExist
+	}
+
+	if ok, err := g.IsGroupHasUsers(ctx, groupID, []int64{tokenPayload.UserID}); err != nil {
+		return []domain.User{}, err
+	} else if !ok {
+		return []domain.User{}, cerror.ErrUserNotInGroup
+	}
+
+	if ok, err := g.userUsecase.IsUserExistByIDs(ctx, userIDs); err != nil {
+		return []domain.User{}, err
+	} else if !ok {
+		return []domain.User{}, cerror.ErrUserNotExist
+	}
+
+	if ok, err := g.IsGroupHasUsers(ctx, groupID, userIDs); err != nil {
+		return []domain.User{}, err
+	} else if ok {
+		return []domain.User{}, cerror.ErrUserAlreadyInGroup
 	}
 
 	err := g.groupRepository.AddUserToGroup(ctx, groupID, userIDs)
@@ -120,13 +168,26 @@ func (g *groupUsecase) RemoveUser(ctx context.Context, groupID, userID int64) er
 		return cerror.ErrTokenInvalid
 	}
 
-	if ok, err := g.IsBelongToUser(ctx, groupID, tokenPayload.UserID); err != nil {
-		return err
-	} else if !ok {
-		return cerror.ErrGroupNotBelongToUser
+	if userID == tokenPayload.UserID {
+		return cerror.ErrCannotRemoveYourself
 	}
 
-	err := g.groupRepository.RemoveUserFromGroup(ctx, groupID, userID)
+	group, err := g.groupRepository.QueryByID(ctx, groupID)
+	if err != nil {
+		return err
+	}
+
+	if group.CreatorID == userID {
+		return cerror.ErrCannotRemoveCreator
+	}
+
+	if ok, err := g.IsGroupHasUsers(ctx, groupID, []int64{userID}); err != nil {
+		return err
+	} else if !ok {
+		return cerror.ErrUserNotInGroup
+	}
+
+	err = g.groupRepository.RemoveUserFromGroup(ctx, groupID, userID)
 	if err != nil {
 		return err
 	}
@@ -142,6 +203,32 @@ func (g *groupUsecase) IsBelongToUser(ctx context.Context, groupID, userID int64
 	}
 
 	if group.CreatorID != userID {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (g *groupUsecase) IsGroupExist(ctx context.Context, groupID int64) (bool, error) {
+	_, err := g.groupRepository.QueryByID(ctx, groupID)
+	if err != nil {
+		if err == cerror.ErrGroupNotExist {
+			return false, nil
+		} else {
+			return false, err
+		}
+	}
+
+	return true, nil
+}
+
+func (g *groupUsecase) IsGroupHasUsers(ctx context.Context, groupID int64, userID []int64) (bool, error) {
+	users, err := g.groupRepository.FindAssociationByUserIDs(ctx, groupID, userID)
+	if err != nil {
+		return false, err
+	}
+
+	if len(users) != len(userID) {
 		return false, nil
 	}
 

@@ -6,6 +6,7 @@ import (
 	"github.com/blawhi2435/shanjuku-backend/graph/resolver"
 	_authUsecase "github.com/blawhi2435/shanjuku-backend/internal/app/auth/usecase"
 	_userPostgresRepo "github.com/blawhi2435/shanjuku-backend/internal/app/user/repository/postgres"
+	_dbPostgresRepo "github.com/blawhi2435/shanjuku-backend/internal/app/db/repository/postgres"
 	_groupPostgresRepo "github.com/blawhi2435/shanjuku-backend/internal/app/group/repository/postgres"
 	_userUsecase "github.com/blawhi2435/shanjuku-backend/internal/app/user/usecase"
 	_groupUsecase "github.com/blawhi2435/shanjuku-backend/internal/app/group/usecase"
@@ -15,7 +16,7 @@ import (
 )
 
 var resolverSet = wire.NewSet(resolver.ProvideResolver)
-var usecaseSet = wire.NewSet(_userPostgresRepo.ProvideUserPostgresRepository, 
+var usecaseSet = wire.NewSet(_dbPostgresRepo.ProvideDBRepository, _userPostgresRepo.ProvideUserPostgresRepository, 
 	_groupPostgresRepo.ProvideGroupPostgresRepository, _userUsecase.ProvideUserUsecase, 
 	_authUsecase.ProvideAuthUsecase, _groupUsecase.ProvideGroupUsecase)
 

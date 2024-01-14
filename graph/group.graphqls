@@ -34,11 +34,11 @@ type DeleteGroupPayload {
 
 input InviteUserInput {
   groupId: ID! @binding(constraint: "required")
-  userId: [ID!]! @binding(constraint: "required,min=1")
+  userIds: [ID!]! @binding(constraint: "required,min=1")
 }
 
 type InviteUserPayload {
-  user: [User!]!
+  users: [User!]!
 }
 
 input RemoveUserInput {

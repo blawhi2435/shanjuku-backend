@@ -7,35 +7,33 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/blawhi2435/shanjuku-backend/domain"
 	"github.com/blawhi2435/shanjuku-backend/graph"
 	"github.com/blawhi2435/shanjuku-backend/graph/model"
-	"github.com/blawhi2435/shanjuku-backend/internal/contextkey"
-	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphql"
-	"github.com/blawhi2435/shanjuku-backend/internal/middleware"
+	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
+	"github.com/blawhi2435/shanjuku-backend/internal/ctxtool"
+	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphmodel"
 )
 
 // CreateGroup is the resolver for the createGroup field.
 func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGroupInput) (*model.CreateGroupPayload, error) {
 	var response *model.CreateGroupPayload
 
-	gctx, err := middleware.GinContextFromContext(ctx)
+	ctx, err := ctxtool.SetTokenToContext(ctx)
 	if err != nil {
-		return nil, err
+		return response, cerror.GetGQLError(ctx, err)
 	}
-
-	token := gctx.GetString(contextkey.TokenCtxKey)
-	ctx = context.WithValue(ctx, contextkey.TokenCtxKey, token)
 
 	group, err := r.GroupUsecase.CreateGroup(ctx, &domain.Group{
 		Name: input.Name,
 	})
 	if err != nil {
-		return nil, err
+		return response, cerror.GetGQLError(ctx, err)
 	}
 
-	modelGroup := graphql.MappingGroupDomainToGraphqlModel(group)
+	modelGroup := graphmodel.MappingGroupDomainToGraphqlModel(group)
 
 	response = &model.CreateGroupPayload{
 		Group: modelGroup,
@@ -46,22 +44,129 @@ func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGr
 
 // EditGroup is the resolver for the editGroup field.
 func (r *mutationResolver) EditGroup(ctx context.Context, input model.EditGroupInput) (*model.EditGroupPayload, error) {
-	panic(fmt.Errorf("not implemented: EditGroup - editGroup"))
+	var response *model.EditGroupPayload
+
+	ctx, err := ctxtool.SetTokenToContext(ctx)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	groupID, err := strconv.ParseInt(input.ID, 10, 64)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+	group, err := r.GroupUsecase.UpdateGroup(ctx, &domain.Group{
+		ID:   groupID,
+		Name: input.Name,
+	})
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	modelGroup := graphmodel.MappingGroupDomainToGraphqlModel(group)
+
+	response = &model.EditGroupPayload{
+		Group: modelGroup,
+	}
+
+	return response, nil
 }
 
 // DeleteGroup is the resolver for the deleteGroup field.
 func (r *mutationResolver) DeleteGroup(ctx context.Context, input *model.DeleteGroupInput) (*model.DeleteGroupPayload, error) {
-	panic(fmt.Errorf("not implemented: DeleteGroup - deleteGroup"))
+	var response *model.DeleteGroupPayload
+
+	ctx, err := ctxtool.SetTokenToContext(ctx)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	groupID, err := strconv.ParseInt(input.ID, 10, 64)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	err = r.GroupUsecase.DeleteGroup(ctx, groupID)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	response = &model.DeleteGroupPayload{
+		Success: true,
+	}
+
+	return response, nil
 }
 
 // InviteUser is the resolver for the inviteUser field.
 func (r *mutationResolver) InviteUser(ctx context.Context, input model.InviteUserInput) (*model.InviteUserPayload, error) {
-	panic(fmt.Errorf("not implemented: InviteUser - inviteUser"))
+	var response *model.InviteUserPayload
+
+	ctx, err := ctxtool.SetTokenToContext(ctx)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	groupID, err := strconv.ParseInt(input.GroupID, 10, 64)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	userIDs := make([]int64, 0)
+	for _, v := range input.UserIds {
+		id, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return response, cerror.GetGQLError(ctx, err)
+		}
+		userIDs = append(userIDs, id)
+	}
+
+	users, err := r.GroupUsecase.InviteUser(ctx, groupID, userIDs)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	modelUsers := make([]*model.User, 0)
+	for _, v := range users {
+		modelUsers = append(modelUsers, graphmodel.MappingUserDomainToGraphqlModel(v))
+	}
+
+	response = &model.InviteUserPayload{
+		Users: modelUsers,
+	}
+
+	return response, nil
 }
 
 // RemoveUser is the resolver for the removeUser field.
 func (r *mutationResolver) RemoveUser(ctx context.Context, input model.RemoveUserInput) (*model.RemoveUserPayload, error) {
-	panic(fmt.Errorf("not implemented: RemoveUser - removeUser"))
+	var response *model.RemoveUserPayload
+
+	ctx, err := ctxtool.SetTokenToContext(ctx)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	groupID, err := strconv.ParseInt(input.GroupID, 10, 64)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	userID, err := strconv.ParseInt(input.UserID, 10, 64)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	err = r.GroupUsecase.RemoveUser(ctx, groupID, userID)
+	if err != nil {
+		return response, cerror.GetGQLError(ctx, err)
+	}
+
+	response = &model.RemoveUserPayload{
+		Success: true,
+	}
+
+	return response, nil
 }
 
 // Group is the resolver for the group field.

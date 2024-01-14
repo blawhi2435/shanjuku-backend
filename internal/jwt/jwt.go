@@ -6,7 +6,7 @@ import (
 
 	"github.com/blawhi2435/shanjuku-backend/environment"
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
-	"github.com/blawhi2435/shanjuku-backend/internal/contextkey"
+	"github.com/blawhi2435/shanjuku-backend/internal/ctxtool"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -54,7 +54,7 @@ func parseToken(tokenString string) (*MyClaims, error) {
 }
 
 func ValidateTokenAndGetPayload(ctx context.Context) (PayloadData, bool) {
-	tokenCtx := ctx.Value(contextkey.TokenCtxKey)
+	tokenCtx := ctx.Value(ctxtool.TokenCtxKey)
 	if tokenCtx == nil || tokenCtx == "" {
 		return PayloadData{}, false
 	}

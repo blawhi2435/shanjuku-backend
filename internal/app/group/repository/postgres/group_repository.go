@@ -6,13 +6,14 @@ import (
 
 	"github.com/blawhi2435/shanjuku-backend/database/postgres"
 	"github.com/blawhi2435/shanjuku-backend/domain"
+	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
 	"github.com/blawhi2435/shanjuku-backend/internal/mapper/repository"
 	"github.com/fatih/structs"
 	"gorm.io/gorm"
 )
 
 type groupName struct {
-	Name string `structs:"name"`
+	GroupName string `structs:"group_name"`
 }
 
 type groupPostgresRepository struct {
@@ -44,6 +45,10 @@ func (g *groupPostgresRepository) QueryByID(ctx context.Context, groupID int64) 
 	orm.Where("id = ?", groupID).
 		Take(&schemaGroup)
 
+	if orm.Error == gorm.ErrRecordNotFound {
+		return domain.Group{}, cerror.ErrGroupNotExist
+	}
+
 	return repository.MappingGroupSchemaGroupToDomain(&schemaGroup), orm.Error
 }
 
@@ -70,19 +75,26 @@ func (g *groupPostgresRepository) QueryAssociationUsers(ctx context.Context,
 func (g *groupPostgresRepository) UpdateGroup(ctx context.Context, group *domain.Group) (int64, error) {
 
 	updateColumn := groupName{
-		Name: group.Name,
+		GroupName: group.Name,
 	}
 
 	res := g.db.Model(&postgres.Group{}).
-		Where("group_id = ?", group.ID).
+		Where("id = ?", group.ID).
 		Updates(structs.Map(updateColumn))
 
 	return res.RowsAffected, res.Error
 }
 
-func (g *groupPostgresRepository) DeleteGroup(ctx context.Context, groupID int64) error {
+func (g *groupPostgresRepository) DeleteGroupWithTx(ctx context.Context, tx any, groupID int64) error {
 
-	res := g.db.Delete(&postgres.Group{}, groupID)
+	var orm *gorm.DB
+	if tx == nil {
+		orm = g.db
+	} else {
+		orm = tx.(*gorm.DB)
+	}
+
+	res := orm.Delete(&postgres.Group{}, groupID)
 
 	return res.Error
 }
@@ -102,7 +114,7 @@ func (g *groupPostgresRepository) AddUserToGroup(ctx context.Context,
 	}
 
 	orm := g.db.Model(&group)
-	err := orm.Association("Users").Append(&users)
+	err := orm.Omit("Users.*").Association("Users").Append(&users)
 
 	return err
 }
@@ -122,13 +134,43 @@ func (g *groupPostgresRepository) RemoveUserFromGroup(ctx context.Context, group
 	return err
 }
 
-func (g *groupPostgresRepository) ClearUserInGroup(ctx context.Context, groupID int64) error {
+func (g *groupPostgresRepository) ClearUserInGroupWithTx(ctx context.Context, tx any,
+	groupID int64) error {
+
 	group := postgres.Group{
 		ID: groupID,
 	}
 
-	orm := g.db.Model(&group)
+	var orm *gorm.DB
+	if tx == nil {
+		orm = g.db
+	} else {
+		orm = tx.(*gorm.DB)
+	}
+
+	orm = orm.Model(&group)
 	err := orm.Association("Users").Clear()
 
 	return err
+}
+
+func (g *groupPostgresRepository) FindAssociationByUserIDs(ctx context.Context,
+	groupID int64, userID []int64) ([]domain.User, error) {
+
+	var schemaUsers []*postgres.User
+	schemaGroup := postgres.Group{
+		ID: groupID,
+	}
+
+	orm := g.db.Model(&schemaGroup)
+	orm.Where("users.id IN ?", userID).
+		Association("Users").
+		Find(&schemaUsers)
+
+	var users []domain.User
+	for _, user := range schemaUsers {
+		users = append(users, repository.MappingUserSchemaToDomain(user))
+	}
+
+	return users, orm.Error
 }

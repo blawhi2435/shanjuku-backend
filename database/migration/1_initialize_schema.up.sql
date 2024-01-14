@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.users
     password character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     name character varying(16) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     avatar character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
-    created_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT users_pkey PRIMARY KEY (id)
 )
 
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS public.groups
 (
     id bigint NOT NULL,
     group_name character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
-    created_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT groups_pkey PRIMARY KEY (id)
 )
 
@@ -76,9 +76,9 @@ CREATE TABLE IF NOT EXISTS public.activities
     group_id bigint NOT NULL,
     creator_id bigint NOT NULL,
     name character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
-    start_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    end_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    start_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT activities_pkey PRIMARY KEY (id),
     CONSTRAINT fk_activities_group FOREIGN KEY (group_id)
         REFERENCES public.groups (id) MATCH SIMPLE
@@ -107,9 +107,9 @@ CREATE TABLE IF NOT EXISTS public.schedules
     activity_id bigint NOT NULL,
     name character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     comment character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
-    start_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    end_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_date timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    start_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT schedules_pkey PRIMARY KEY (id),
     CONSTRAINT fk_schedules_activity FOREIGN KEY (activity_id)
         REFERENCES public.activities (id) MATCH SIMPLE

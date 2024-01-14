@@ -1,4 +1,4 @@
-package graphql
+package graphmodel
 
 import (
 	"strconv"

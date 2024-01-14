@@ -9,14 +9,14 @@ import (
 	"fmt"
 
 	"github.com/blawhi2435/shanjuku-backend/domain"
-	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphql"
 	"github.com/blawhi2435/shanjuku-backend/graph/model"
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
+	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphmodel"
 )
 
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInput) (*model.RegisterPayload, error) {
-	var response *model.RegisterPayload = &model.RegisterPayload{}
+	var response *model.RegisterPayload
 
 	user, err := r.AuthUsecasse.Register(ctx, &domain.User{
 		Account:  input.Account,
@@ -26,7 +26,7 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 		return response, cerror.GetGQLError(ctx, err)
 	}
 
-	modelUser := graphql.MappingUserDomainToGraphqlModel(user)
+	modelUser := graphmodel.MappingUserDomainToGraphqlModel(user)
 
 	response = &model.RegisterPayload{
 		User:  modelUser,
@@ -38,14 +38,14 @@ func (r *mutationResolver) Register(ctx context.Context, input model.RegisterInp
 
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (*model.LoginPayload, error) {
-	var response *model.LoginPayload = &model.LoginPayload{}
+	var response *model.LoginPayload
 
 	user, err := r.AuthUsecasse.Login(ctx, input.Account, input.Password)
 	if err != nil {
 		return response, cerror.GetGQLError(ctx, err)
 	}
 
-	modelUser := graphql.MappingUserDomainToGraphqlModel(user)
+	modelUser := graphmodel.MappingUserDomainToGraphqlModel(user)
 
 	response = &model.LoginPayload{
 		User:  modelUser,

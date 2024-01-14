@@ -34,11 +34,11 @@ type Group struct {
 
 type InviteUserInput struct {
 	GroupID string   `json:"groupId"`
-	UserID  []string `json:"userId"`
+	UserIds []string `json:"userIds"`
 }
 
 type InviteUserPayload struct {
-	User []*User `json:"user"`
+	Users []*User `json:"users"`
 }
 
 type LoginInput struct {

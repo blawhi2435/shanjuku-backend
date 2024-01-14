@@ -8,7 +8,6 @@ import (
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
 	"github.com/blawhi2435/shanjuku-backend/internal/jwt"
 	"github.com/blawhi2435/shanjuku-backend/internal/util"
-	"gorm.io/gorm"
 )
 
 type authUsecase struct {
@@ -28,7 +27,7 @@ func ProvideAuthUsecase(
 
 func (a *authUsecase) Register(ctx context.Context, user *domain.User) (domain.User, error) {
 
-	isUserExist, err := a.userUsecase.IsUserExist(ctx, user.Account)
+	isUserExist, err := a.userUsecase.IsUserExistByAccount(ctx, user.Account)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -65,7 +64,7 @@ func (a *authUsecase) Register(ctx context.Context, user *domain.User) (domain.U
 func (a *authUsecase) Login(ctx context.Context, account, password string) (domain.User, error) {
 
 	user, err := a.userRepository.QueryByAccount(ctx, account)
-	if err == gorm.ErrRecordNotFound {
+	if err == cerror.ErrUserNotExist {
 		return domain.User{}, cerror.ErrAccountOrPasswordNotMatch
 	}
 
@@ -91,7 +90,7 @@ func (a *authUsecase) Login(ctx context.Context, account, password string) (doma
 
 func (a *authUsecase) Logout(ctx context.Context, account string) error {
 	
-	isUserExist, err := a.userUsecase.IsUserExist(ctx, account)
+	isUserExist, err := a.userUsecase.IsUserExistByAccount(ctx, account)
 	if err != nil {
 		return err
 	}
