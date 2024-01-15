@@ -52,6 +52,55 @@ func (g *groupUsecase) CreateGroup(ctx context.Context, group *domain.Group) (do
 	return *group, nil
 }
 
+func (g *groupUsecase) QueryByGroupID(ctx context.Context, groupID int64) (domain.Group, error) {
+
+	if ok, err := g.IsGroupExist(ctx, groupID); err != nil {
+		return domain.Group{}, err
+	} else if !ok {
+		return domain.Group{}, cerror.ErrGroupNotExist
+	}
+
+	group, err := g.groupRepository.QueryByID(ctx, groupID)
+	if err != nil {
+		return domain.Group{}, err
+	}
+
+	return group, nil
+}
+
+func (g *groupUsecase) QueryUserGroups (ctx context.Context, userID int64) ([]domain.Group, error) {
+
+
+	if ok, err := g.userUsecase.IsUserExistByIDs(ctx, []int64{userID}); err != nil {
+		return []domain.Group{}, err
+	} else if !ok {
+		return []domain.Group{}, cerror.ErrUserNotExist
+	}
+
+	groups, err := g.userRepository.QueryAssociationGroups(ctx, userID)
+	if err != nil {
+		return []domain.Group{}, err
+	}
+
+	return groups, nil
+}
+
+func (g *groupUsecase) QueryGroupUsers(ctx context.Context, groupID int64) ([]domain.User, error) {
+
+	if ok, err := g.IsGroupExist(ctx, groupID); err != nil {
+		return []domain.User{}, err
+	} else if !ok {
+		return []domain.User{}, cerror.ErrGroupNotExist
+	}
+
+	users, err := g.groupRepository.QueryAssociationUsers(ctx, groupID)
+	if err != nil {
+		return []domain.User{}, err
+	}
+
+	return users, nil
+}
+
 func (g *groupUsecase) UpdateGroup(ctx context.Context, group *domain.Group) (domain.Group, error) {
 
 	tokenPayload, ok := jwt.ValidateTokenAndGetPayload(ctx)
@@ -223,7 +272,7 @@ func (g *groupUsecase) IsGroupExist(ctx context.Context, groupID int64) (bool, e
 }
 
 func (g *groupUsecase) IsGroupHasUsers(ctx context.Context, groupID int64, userID []int64) (bool, error) {
-	users, err := g.groupRepository.FindAssociationByUserIDs(ctx, groupID, userID)
+	users, err := g.groupRepository.QueryAssociationUsersWithSpecifyUserIDs(ctx, groupID, userID)
 	if err != nil {
 		return false, err
 	}

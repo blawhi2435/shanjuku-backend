@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/blawhi2435/shanjuku-backend/graph"
 	"github.com/blawhi2435/shanjuku-backend/graph/directive"
@@ -31,6 +32,7 @@ func graphqlHandler(svc *service.Service) gin.HandlerFunc {
 	graphConfig := graph.Config{Resolvers: myResolver}
 	graphConfig.Directives.Binding = directive.Binding
 	h := handler.NewDefaultServer(graph.NewExecutableSchema(graphConfig))
+	h.Use(extension.FixedComplexityLimit(20))
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)

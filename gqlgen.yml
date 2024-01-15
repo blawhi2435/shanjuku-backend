@@ -85,3 +85,11 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  User:
+    fields:
+      groups:
+        resolver: true
+  Group:    
+    fields:
+      users:
+        resolver: true

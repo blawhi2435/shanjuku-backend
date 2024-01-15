@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/blawhi2435/shanjuku-backend/domain"
@@ -171,8 +170,43 @@ func (r *mutationResolver) RemoveUser(ctx context.Context, input model.RemoveUse
 
 // Group is the resolver for the group field.
 func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, error) {
-	panic(fmt.Errorf("not implemented: Group - group"))
+	groupID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, cerror.GetGQLError(ctx, err)
+	}
+
+	group, err := r.GroupUsecase.QueryByGroupID(ctx, groupID)
+	if err != nil {
+		return nil, cerror.GetGQLError(ctx, err)
+	}
+
+	modelGroup := graphmodel.MappingGroupDomainToGraphqlModel(group)
+
+	return modelGroup, nil
 }
+
+// Users is the resolver for the users field.
+func (r *groupResolver) Users(ctx context.Context, obj *model.Group) ([]*model.User, error) {
+	groupID, err := strconv.ParseInt(obj.ID, 10, 64)
+	if err != nil {
+		return nil, cerror.GetGQLError(ctx, err)
+	}
+
+	users, err := r.GroupUsecase.QueryGroupUsers(ctx, groupID)
+	if err != nil {
+		return nil, cerror.GetGQLError(ctx, err)
+	}
+
+	modelUsers := make([]*model.User, 0)
+	for _, v := range users {
+		modelUsers = append(modelUsers, graphmodel.MappingUserDomainToGraphqlModel(v))
+	}
+
+	return modelUsers, nil
+}
+
+// Group returns graph.GroupResolver implementation.
+func (r *Resolver) Group() graph.GroupResolver { return &groupResolver{r} }
 
 // Mutation returns graph.MutationResolver implementation.
 func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
@@ -180,5 +214,6 @@ func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
+type groupResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

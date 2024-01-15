@@ -15,6 +15,16 @@ func ProvideUserUsecase(userRepository domain.UserPostgreRepository) domain.User
 	return &UserUsecase{userRepository}
 }
 
+func (u *UserUsecase) QueryByID (ctx context.Context, id int64) (domain.User, error) {
+
+	user, err := u.userRepository.QueryByID(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	return user, nil
+}
+
 func (u *UserUsecase) IsUserExistByAccount(ctx context.Context, account string) (bool, error) {
 	_, err := u.userRepository.QueryByAccount(ctx, account)
 	if err != nil {

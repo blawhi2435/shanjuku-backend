@@ -28,8 +28,9 @@ type EditGroupPayload struct {
 }
 
 type Group struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID    string  `json:"id"`
+	Name  string  `json:"name"`
+	Users []*User `json:"users,omitempty"`
 }
 
 type InviteUserInput struct {
@@ -85,8 +86,9 @@ type RemoveUserPayload struct {
 }
 
 type User struct {
-	ID      string `json:"id"`
-	Account string `json:"account"`
-	Name    string `json:"name"`
-	Avatar  string `json:"avatar"`
+	ID      string   `json:"id"`
+	Account string   `json:"account"`
+	Name    string   `json:"name"`
+	Avatar  string   `json:"avatar"`
+	Groups  []*Group `json:"groups,omitempty"`
 }

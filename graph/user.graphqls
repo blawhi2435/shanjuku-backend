@@ -3,6 +3,7 @@ type User {
   account: String!
   name: String!
   avatar: String!
+  groups: [Group!]
 }
 
 extend type Query {

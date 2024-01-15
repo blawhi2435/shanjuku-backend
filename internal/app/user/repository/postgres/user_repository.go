@@ -42,6 +42,20 @@ func (u *userPostgresRepository) QueryByAccount(ctx context.Context, account str
 	return repository.MappingUserSchemaToDomain(&schemaUser), res.Error
 }
 
+func (u *userPostgresRepository) QueryByID(ctx context.Context, id int64) (domain.User, error) {
+	var schemaUser postgres.User
+	orm := u.db.Model(&schemaUser)
+	res := orm.Select("id", "account", "password", "name", "avatar").
+		Where("id = ?", id).
+		Take(&schemaUser)
+
+	if orm.Error == gorm.ErrRecordNotFound {
+		return domain.User{}, cerror.ErrUserNotExist
+	}
+
+	return repository.MappingUserSchemaToDomain(&schemaUser), res.Error
+}
+
 func (u *userPostgresRepository) QueryByIDs(ctx context.Context, ids []int64) ([]domain.User, error) {
 	var schemaUsers []postgres.User
 	var domainUsers []domain.User
@@ -51,13 +65,29 @@ func (u *userPostgresRepository) QueryByIDs(ctx context.Context, ids []int64) ([
 		Where("id IN ?", ids).
 		Find(&schemaUsers)
 
-	if orm.Error == gorm.ErrRecordNotFound {
-		return nil, cerror.ErrUserNotExist
-	}
-
 	for _, schemaUser := range schemaUsers {
 		domainUsers = append(domainUsers, repository.MappingUserSchemaToDomain(&schemaUser))
 	}
 
 	return domainUsers, res.Error
+}
+
+func (u *userPostgresRepository) QueryAssociationGroups(ctx context.Context, 
+	userID int64) ([]domain.Group, error) {
+
+	var schemaGroups []*postgres.Group
+	schemaUser := postgres.User{
+		ID: userID,
+	}
+
+	orm := u.db.Model(&schemaUser)
+	orm.Association("Groups").
+		Find(&schemaGroups)
+
+	var groups []domain.Group
+	for _, schemaGroup := range schemaGroups {
+		groups = append(groups, repository.MappingGroupSchemaGroupToDomain(schemaGroup))
+	}
+
+	return groups, orm.Error
 }

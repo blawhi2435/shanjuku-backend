@@ -154,7 +154,7 @@ func (g *groupPostgresRepository) ClearUserInGroupWithTx(ctx context.Context, tx
 	return err
 }
 
-func (g *groupPostgresRepository) FindAssociationByUserIDs(ctx context.Context,
+func (g *groupPostgresRepository) QueryAssociationUsersWithSpecifyUserIDs(ctx context.Context,
 	groupID int64, userID []int64) ([]domain.User, error) {
 
 	var schemaUsers []*postgres.User
