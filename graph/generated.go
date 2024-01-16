@@ -50,12 +50,31 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Activity struct {
+		CreatorID func(childComplexity int) int
+		GroupID   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+	}
+
+	CreateActivityPayload struct {
+		Activity func(childComplexity int) int
+	}
+
 	CreateGroupPayload struct {
 		Group func(childComplexity int) int
 	}
 
+	DeleteActivityPayload struct {
+		Success func(childComplexity int) int
+	}
+
 	DeleteGroupPayload struct {
 		Success func(childComplexity int) int
+	}
+
+	EditActivityPayload struct {
+		Activity func(childComplexity int) int
 	}
 
 	EditGroupPayload struct {
@@ -63,9 +82,10 @@ type ComplexityRoot struct {
 	}
 
 	Group struct {
-		ID    func(childComplexity int) int
-		Name  func(childComplexity int) int
-		Users func(childComplexity int) int
+		CreatorID func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Users     func(childComplexity int) int
 	}
 
 	InviteUserPayload struct {
@@ -82,19 +102,23 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateGroup func(childComplexity int, input model.CreateGroupInput) int
-		DeleteGroup func(childComplexity int, input *model.DeleteGroupInput) int
-		EditGroup   func(childComplexity int, input model.EditGroupInput) int
-		InviteUser  func(childComplexity int, input model.InviteUserInput) int
-		Login       func(childComplexity int, input model.LoginInput) int
-		Logout      func(childComplexity int, input model.LogoutInput) int
-		Register    func(childComplexity int, input model.RegisterInput) int
-		RemoveUser  func(childComplexity int, input model.RemoveUserInput) int
+		CreateActivity func(childComplexity int, input model.CreateActivityInput) int
+		CreateGroup    func(childComplexity int, input model.CreateGroupInput) int
+		DeleteActivity func(childComplexity int, input *model.DeleteActivityInput) int
+		DeleteGroup    func(childComplexity int, input *model.DeleteGroupInput) int
+		EditActivity   func(childComplexity int, input model.EditActivityInput) int
+		EditGroup      func(childComplexity int, input model.EditGroupInput) int
+		InviteUser     func(childComplexity int, input model.InviteUserInput) int
+		Login          func(childComplexity int, input model.LoginInput) int
+		Logout         func(childComplexity int, input model.LogoutInput) int
+		Register       func(childComplexity int, input model.RegisterInput) int
+		RemoveUser     func(childComplexity int, input model.RemoveUserInput) int
 	}
 
 	Query struct {
-		Group func(childComplexity int, id string) int
-		User  func(childComplexity int, id string) int
+		Activity func(childComplexity int, id string) int
+		Group    func(childComplexity int, id string) int
+		User     func(childComplexity int, id string) int
 	}
 
 	RegisterPayload struct {
@@ -119,6 +143,9 @@ type GroupResolver interface {
 	Users(ctx context.Context, obj *model.Group) ([]*model.User, error)
 }
 type MutationResolver interface {
+	CreateActivity(ctx context.Context, input model.CreateActivityInput) (*model.CreateActivityPayload, error)
+	EditActivity(ctx context.Context, input model.EditActivityInput) (*model.EditActivityPayload, error)
+	DeleteActivity(ctx context.Context, input *model.DeleteActivityInput) (*model.DeleteActivityPayload, error)
 	CreateGroup(ctx context.Context, input model.CreateGroupInput) (*model.CreateGroupPayload, error)
 	EditGroup(ctx context.Context, input model.EditGroupInput) (*model.EditGroupPayload, error)
 	DeleteGroup(ctx context.Context, input *model.DeleteGroupInput) (*model.DeleteGroupPayload, error)
@@ -129,6 +156,7 @@ type MutationResolver interface {
 	Logout(ctx context.Context, input model.LogoutInput) (*model.LogoutPayload, error)
 }
 type QueryResolver interface {
+	Activity(ctx context.Context, id string) (*model.Activity, error)
 	Group(ctx context.Context, id string) (*model.Group, error)
 	User(ctx context.Context, id string) (*model.User, error)
 }
@@ -155,12 +183,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Activity.creatorID":
+		if e.complexity.Activity.CreatorID == nil {
+			break
+		}
+
+		return e.complexity.Activity.CreatorID(childComplexity), true
+
+	case "Activity.groupID":
+		if e.complexity.Activity.GroupID == nil {
+			break
+		}
+
+		return e.complexity.Activity.GroupID(childComplexity), true
+
+	case "Activity.id":
+		if e.complexity.Activity.ID == nil {
+			break
+		}
+
+		return e.complexity.Activity.ID(childComplexity), true
+
+	case "Activity.name":
+		if e.complexity.Activity.Name == nil {
+			break
+		}
+
+		return e.complexity.Activity.Name(childComplexity), true
+
+	case "CreateActivityPayload.Activity":
+		if e.complexity.CreateActivityPayload.Activity == nil {
+			break
+		}
+
+		return e.complexity.CreateActivityPayload.Activity(childComplexity), true
+
 	case "CreateGroupPayload.group":
 		if e.complexity.CreateGroupPayload.Group == nil {
 			break
 		}
 
 		return e.complexity.CreateGroupPayload.Group(childComplexity), true
+
+	case "DeleteActivityPayload.success":
+		if e.complexity.DeleteActivityPayload.Success == nil {
+			break
+		}
+
+		return e.complexity.DeleteActivityPayload.Success(childComplexity), true
 
 	case "DeleteGroupPayload.success":
 		if e.complexity.DeleteGroupPayload.Success == nil {
@@ -169,12 +239,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DeleteGroupPayload.Success(childComplexity), true
 
+	case "EditActivityPayload.Activity":
+		if e.complexity.EditActivityPayload.Activity == nil {
+			break
+		}
+
+		return e.complexity.EditActivityPayload.Activity(childComplexity), true
+
 	case "EditGroupPayload.group":
 		if e.complexity.EditGroupPayload.Group == nil {
 			break
 		}
 
 		return e.complexity.EditGroupPayload.Group(childComplexity), true
+
+	case "Group.creatorID":
+		if e.complexity.Group.CreatorID == nil {
+			break
+		}
+
+		return e.complexity.Group.CreatorID(childComplexity), true
 
 	case "Group.id":
 		if e.complexity.Group.ID == nil {
@@ -225,6 +309,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LogoutPayload.Success(childComplexity), true
 
+	case "Mutation.createActivity":
+		if e.complexity.Mutation.CreateActivity == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createActivity_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateActivity(childComplexity, args["input"].(model.CreateActivityInput)), true
+
 	case "Mutation.createGroup":
 		if e.complexity.Mutation.CreateGroup == nil {
 			break
@@ -237,6 +333,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateGroup(childComplexity, args["input"].(model.CreateGroupInput)), true
 
+	case "Mutation.deleteActivity":
+		if e.complexity.Mutation.DeleteActivity == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteActivity_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteActivity(childComplexity, args["input"].(*model.DeleteActivityInput)), true
+
 	case "Mutation.deleteGroup":
 		if e.complexity.Mutation.DeleteGroup == nil {
 			break
@@ -248,6 +356,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteGroup(childComplexity, args["input"].(*model.DeleteGroupInput)), true
+
+	case "Mutation.editActivity":
+		if e.complexity.Mutation.EditActivity == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_editActivity_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EditActivity(childComplexity, args["input"].(model.EditActivityInput)), true
 
 	case "Mutation.editGroup":
 		if e.complexity.Mutation.EditGroup == nil {
@@ -320,6 +440,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RemoveUser(childComplexity, args["input"].(model.RemoveUserInput)), true
+
+	case "Query.activity":
+		if e.complexity.Query.Activity == nil {
+			break
+		}
+
+		args, err := ec.field_Query_activity_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Activity(childComplexity, args["id"].(string)), true
 
 	case "Query.group":
 		if e.complexity.Query.Group == nil {
@@ -409,8 +541,11 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreateActivityInput,
 		ec.unmarshalInputCreateGroupInput,
+		ec.unmarshalInputDeleteActivityInput,
 		ec.unmarshalInputDeleteGroupInput,
+		ec.unmarshalInputEditActivityInput,
 		ec.unmarshalInputEditGroupInput,
 		ec.unmarshalInputInviteUserInput,
 		ec.unmarshalInputLoginInput,
@@ -513,7 +648,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "group.graphqls" "schema.graphqls" "user.graphqls"
+//go:embed "activity.graphqls" "group.graphqls" "schema.graphqls" "user.graphqls"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -525,6 +660,7 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
+	{Name: "activity.graphqls", Input: sourceData("activity.graphqls"), BuiltIn: false},
 	{Name: "group.graphqls", Input: sourceData("group.graphqls"), BuiltIn: false},
 	{Name: "schema.graphqls", Input: sourceData("schema.graphqls"), BuiltIn: false},
 	{Name: "user.graphqls", Input: sourceData("user.graphqls"), BuiltIn: false},
@@ -550,6 +686,21 @@ func (ec *executionContext) dir_binding_args(ctx context.Context, rawArgs map[st
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateActivityInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateActivityInput2githubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐCreateActivityInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -565,6 +716,21 @@ func (ec *executionContext) field_Mutation_createGroup_args(ctx context.Context,
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.DeleteActivityInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalODeleteActivityInput2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐDeleteActivityInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -572,6 +738,21 @@ func (ec *executionContext) field_Mutation_deleteGroup_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalODeleteGroupInput2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐDeleteGroupInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_editActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EditActivityInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNEditActivityInput2githubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐEditActivityInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -685,6 +866,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_activity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_group_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -753,6 +949,236 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Activity_id(ctx context.Context, field graphql.CollectedField, obj *model.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Activity_groupID(ctx context.Context, field graphql.CollectedField, obj *model.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_groupID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GroupID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_groupID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Activity_creatorID(ctx context.Context, field graphql.CollectedField, obj *model.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_creatorID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatorID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_creatorID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Activity_name(ctx context.Context, field graphql.CollectedField, obj *model.Activity) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Activity_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Activity_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Activity",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateActivityPayload_Activity(ctx context.Context, field graphql.CollectedField, obj *model.CreateActivityPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateActivityPayload_Activity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Activity, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Activity)
+	fc.Result = res
+	return ec.marshalNActivity2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐActivity(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateActivityPayload_Activity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateActivityPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Activity_id(ctx, field)
+			case "groupID":
+				return ec.fieldContext_Activity_groupID(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Activity_creatorID(ctx, field)
+			case "name":
+				return ec.fieldContext_Activity_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Activity", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CreateGroupPayload_group(ctx context.Context, field graphql.CollectedField, obj *model.CreateGroupPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CreateGroupPayload_group(ctx, field)
 	if err != nil {
@@ -794,12 +1220,58 @@ func (ec *executionContext) fieldContext_CreateGroupPayload_group(ctx context.Co
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Group_id(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Group_creatorID(ctx, field)
 			case "name":
 				return ec.fieldContext_Group_name(ctx, field)
 			case "users":
 				return ec.fieldContext_Group_users(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteActivityPayload_success(ctx context.Context, field graphql.CollectedField, obj *model.DeleteActivityPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DeleteActivityPayload_success(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Success, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DeleteActivityPayload_success(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteActivityPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -849,6 +1321,57 @@ func (ec *executionContext) fieldContext_DeleteGroupPayload_success(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _EditActivityPayload_Activity(ctx context.Context, field graphql.CollectedField, obj *model.EditActivityPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_EditActivityPayload_Activity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Activity, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Activity)
+	fc.Result = res
+	return ec.marshalOActivity2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐActivity(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_EditActivityPayload_Activity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EditActivityPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Activity_id(ctx, field)
+			case "groupID":
+				return ec.fieldContext_Activity_groupID(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Activity_creatorID(ctx, field)
+			case "name":
+				return ec.fieldContext_Activity_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Activity", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _EditGroupPayload_group(ctx context.Context, field graphql.CollectedField, obj *model.EditGroupPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_EditGroupPayload_group(ctx, field)
 	if err != nil {
@@ -887,6 +1410,8 @@ func (ec *executionContext) fieldContext_EditGroupPayload_group(ctx context.Cont
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Group_id(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Group_creatorID(ctx, field)
 			case "name":
 				return ec.fieldContext_Group_name(ctx, field)
 			case "users":
@@ -930,6 +1455,50 @@ func (ec *executionContext) _Group_id(ctx context.Context, field graphql.Collect
 }
 
 func (ec *executionContext) fieldContext_Group_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Group_creatorID(ctx context.Context, field graphql.CollectedField, obj *model.Group) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Group_creatorID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatorID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Group_creatorID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Group",
 		Field:      field,
@@ -1235,6 +1804,174 @@ func (ec *executionContext) fieldContext_LogoutPayload_success(ctx context.Conte
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createActivity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateActivity(rctx, fc.Args["input"].(model.CreateActivityInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.CreateActivityPayload)
+	fc.Result = res
+	return ec.marshalOCreateActivityPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐCreateActivityPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createActivity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "Activity":
+				return ec.fieldContext_CreateActivityPayload_Activity(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreateActivityPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_editActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_editActivity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EditActivity(rctx, fc.Args["input"].(model.EditActivityInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.EditActivityPayload)
+	fc.Result = res
+	return ec.marshalOEditActivityPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐEditActivityPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_editActivity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "Activity":
+				return ec.fieldContext_EditActivityPayload_Activity(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type EditActivityPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_editActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteActivity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteActivity(rctx, fc.Args["input"].(*model.DeleteActivityInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.DeleteActivityPayload)
+	fc.Result = res
+	return ec.marshalODeleteActivityPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐDeleteActivityPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteActivity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "success":
+				return ec.fieldContext_DeleteActivityPayload_success(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteActivityPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteActivity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1700,6 +2437,71 @@ func (ec *executionContext) fieldContext_Mutation_logout(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_activity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_activity(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Activity(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Activity)
+	fc.Result = res
+	return ec.marshalNActivity2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐActivity(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_activity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Activity_id(ctx, field)
+			case "groupID":
+				return ec.fieldContext_Activity_groupID(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Activity_creatorID(ctx, field)
+			case "name":
+				return ec.fieldContext_Activity_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Activity", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_activity_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_group(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_group(ctx, field)
 	if err != nil {
@@ -1738,6 +2540,8 @@ func (ec *executionContext) fieldContext_Query_group(ctx context.Context, field 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Group_id(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Group_creatorID(ctx, field)
 			case "name":
 				return ec.fieldContext_Group_name(ctx, field)
 			case "users":
@@ -2311,6 +3115,8 @@ func (ec *executionContext) fieldContext_User_groups(ctx context.Context, field 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Group_id(ctx, field)
+			case "creatorID":
+				return ec.fieldContext_Group_creatorID(ctx, field)
 			case "name":
 				return ec.fieldContext_Group_name(ctx, field)
 			case "users":
@@ -4095,6 +4901,74 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCreateActivityInput(ctx context.Context, obj interface{}) (model.CreateActivityInput, error) {
+	var it model.CreateActivityInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"groupID", "name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "groupID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("groupID"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNID2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.GroupID = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNString2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required,max=32")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Name = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateGroupInput(ctx context.Context, obj interface{}) (model.CreateGroupInput, error) {
 	var it model.CreateGroupInput
 	asMap := map[string]interface{}{}
@@ -4139,6 +5013,50 @@ func (ec *executionContext) unmarshalInputCreateGroupInput(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteActivityInput(ctx context.Context, obj interface{}) (model.DeleteActivityInput, error) {
+	var it model.DeleteActivityInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNID2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.ID = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDeleteGroupInput(ctx context.Context, obj interface{}) (model.DeleteGroupInput, error) {
 	var it model.DeleteGroupInput
 	asMap := map[string]interface{}{}
@@ -4173,6 +5091,74 @@ func (ec *executionContext) unmarshalInputDeleteGroupInput(ctx context.Context, 
 			}
 			if data, ok := tmp.(string); ok {
 				it.ID = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEditActivityInput(ctx context.Context, obj interface{}) (model.EditActivityInput, error) {
+	var it model.EditActivityInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNID2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.ID = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNString2string(ctx, v) }
+			directive1 := func(ctx context.Context) (interface{}, error) {
+				constraint, err := ec.unmarshalNString2string(ctx, "required,max=32")
+				if err != nil {
+					return nil, err
+				}
+				if ec.directives.Binding == nil {
+					return nil, errors.New("directive binding is not implemented")
+				}
+				return ec.directives.Binding(ctx, obj, directive0, constraint)
+			}
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Name = data
 			} else {
 				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
 				return it, graphql.ErrorOnPath(ctx, err)
@@ -4543,6 +5529,99 @@ func (ec *executionContext) unmarshalInputRemoveUserInput(ctx context.Context, o
 
 // region    **************************** object.gotpl ****************************
 
+var activityImplementors = []string{"Activity"}
+
+func (ec *executionContext) _Activity(ctx context.Context, sel ast.SelectionSet, obj *model.Activity) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, activityImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Activity")
+		case "id":
+			out.Values[i] = ec._Activity_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "groupID":
+			out.Values[i] = ec._Activity_groupID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "creatorID":
+			out.Values[i] = ec._Activity_creatorID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Activity_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var createActivityPayloadImplementors = []string{"CreateActivityPayload"}
+
+func (ec *executionContext) _CreateActivityPayload(ctx context.Context, sel ast.SelectionSet, obj *model.CreateActivityPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createActivityPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateActivityPayload")
+		case "Activity":
+			out.Values[i] = ec._CreateActivityPayload_Activity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var createGroupPayloadImplementors = []string{"CreateGroupPayload"}
 
 func (ec *executionContext) _CreateGroupPayload(ctx context.Context, sel ast.SelectionSet, obj *model.CreateGroupPayload) graphql.Marshaler {
@@ -4556,6 +5635,45 @@ func (ec *executionContext) _CreateGroupPayload(ctx context.Context, sel ast.Sel
 			out.Values[i] = graphql.MarshalString("CreateGroupPayload")
 		case "group":
 			out.Values[i] = ec._CreateGroupPayload_group(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteActivityPayloadImplementors = []string{"DeleteActivityPayload"}
+
+func (ec *executionContext) _DeleteActivityPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteActivityPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteActivityPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteActivityPayload")
+		case "success":
+			out.Values[i] = ec._DeleteActivityPayload_success(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4598,6 +5716,42 @@ func (ec *executionContext) _DeleteGroupPayload(ctx context.Context, sel ast.Sel
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var editActivityPayloadImplementors = []string{"EditActivityPayload"}
+
+func (ec *executionContext) _EditActivityPayload(ctx context.Context, sel ast.SelectionSet, obj *model.EditActivityPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, editActivityPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EditActivityPayload")
+		case "Activity":
+			out.Values[i] = ec._EditActivityPayload_Activity(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4670,6 +5824,11 @@ func (ec *executionContext) _Group(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = graphql.MarshalString("Group")
 		case "id":
 			out.Values[i] = ec._Group_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "creatorID":
+			out.Values[i] = ec._Group_creatorID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -4875,6 +6034,18 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createActivity":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createActivity(ctx, field)
+			})
+		case "editActivity":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_editActivity(ctx, field)
+			})
+		case "deleteActivity":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteActivity(ctx, field)
+			})
 		case "createGroup":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createGroup(ctx, field)
@@ -4958,6 +6129,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "activity":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_activity(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "group":
 			field := field
 
@@ -5523,6 +6716,20 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNActivity2githubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐActivity(ctx context.Context, sel ast.SelectionSet, v model.Activity) graphql.Marshaler {
+	return ec._Activity(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNActivity2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐActivity(ctx context.Context, sel ast.SelectionSet, v *model.Activity) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Activity(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5538,8 +6745,18 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateActivityInput2githubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐCreateActivityInput(ctx context.Context, v interface{}) (model.CreateActivityInput, error) {
+	res, err := ec.unmarshalInputCreateActivityInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateGroupInput2githubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐCreateGroupInput(ctx context.Context, v interface{}) (model.CreateGroupInput, error) {
 	res, err := ec.unmarshalInputCreateGroupInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNEditActivityInput2githubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐEditActivityInput(ctx context.Context, v interface{}) (model.EditActivityInput, error) {
+	res, err := ec.unmarshalInputEditActivityInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -5994,6 +7211,13 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) marshalOActivity2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐActivity(ctx context.Context, sel ast.SelectionSet, v *model.Activity) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Activity(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6020,11 +7244,33 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) marshalOCreateActivityPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐCreateActivityPayload(ctx context.Context, sel ast.SelectionSet, v *model.CreateActivityPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CreateActivityPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOCreateGroupPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐCreateGroupPayload(ctx context.Context, sel ast.SelectionSet, v *model.CreateGroupPayload) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._CreateGroupPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalODeleteActivityInput2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐDeleteActivityInput(ctx context.Context, v interface{}) (*model.DeleteActivityInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputDeleteActivityInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalODeleteActivityPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐDeleteActivityPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteActivityPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DeleteActivityPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalODeleteGroupInput2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐDeleteGroupInput(ctx context.Context, v interface{}) (*model.DeleteGroupInput, error) {
@@ -6040,6 +7286,13 @@ func (ec *executionContext) marshalODeleteGroupPayload2ᚖgithubᚗcomᚋblawhi2
 		return graphql.Null
 	}
 	return ec._DeleteGroupPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOEditActivityPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐEditActivityPayload(ctx context.Context, sel ast.SelectionSet, v *model.EditActivityPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._EditActivityPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOEditGroupPayload2ᚖgithubᚗcomᚋblawhi2435ᚋshanjukuᚑbackendᚋgraphᚋmodelᚐEditGroupPayload(ctx context.Context, sel ast.SelectionSet, v *model.EditGroupPayload) graphql.Marshaler {

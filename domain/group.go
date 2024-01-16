@@ -7,7 +7,7 @@ import (
 type Group struct {
 	ID        int64
 	CreatorID int64
-	Name      string
+	GroupName string
 }
 
 type GroupPostgreRepository interface {
@@ -15,6 +15,7 @@ type GroupPostgreRepository interface {
 	QueryByID(ctx context.Context, groupID int64) (Group, error)
 	QueryAssociationUsers(ctx context.Context, groupID int64) ([]User, error)
 	QueryAssociationUsersWithSpecifyUserIDs(ctx context.Context, groupID int64, userID []int64) ([]User, error)
+	QueryAssociationActivities(ctx context.Context, groupID int64) ([]Activity, error)
 	UpdateGroup(ctx context.Context, group *Group) (int64, error)
 	DeleteGroupWithTx(ctx context.Context, tx any, groupID int64) error
 	AddUserToGroup(ctx context.Context, groupID int64, userID []int64) error
@@ -27,6 +28,7 @@ type GroupUsecase interface {
 	QueryByGroupID(ctx context.Context, groupID int64) (Group, error)
 	QueryUserGroups(ctx context.Context, userID int64) ([]Group, error)
 	QueryGroupUsers(ctx context.Context, groupID int64) ([]User, error)
+	QueryGroupActivities(ctx context.Context, groupID int64) ([]Activity, error)
 	UpdateGroup(ctx context.Context, group *Group) (Group, error)
 	DeleteGroup(ctx context.Context, groupID int64) error
 	InviteUser(ctx context.Context, groupID int64, userIDs []int64) ([]User, error)

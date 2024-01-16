@@ -20,6 +20,8 @@ var (
 	ErrAccountOrPasswordNotMatch = Error{Code: "A0001", Message: "account or password not match"}
 	ErrAccountAlreadyExist       = Error{Code: "A0002", Message: "account already exist"}
 	ErrTokenInvalid              = Error{Code: "A0003", Message: "token invalid"}
+	ErrActivityNotBelongToUser   = Error{Code: "AC0001", Message: "activity not belong to user"}
+	ErrActivityNotExist          = Error{Code: "AC0002", Message: "activity not exist"}
 	ErrGroupNotBelongToUser      = Error{Code: "G0001", Message: "group not belong to user"}
 	ErrGroupNotExist             = Error{Code: "G0002", Message: "group not exist"}
 	ErrUserAlreadyInGroup        = Error{Code: "G0003", Message: "user already in group"}
@@ -39,6 +41,8 @@ func GetGQLError(ctx context.Context, e error) error {
 		ErrAccountOrPasswordNotMatch,
 		ErrAccountAlreadyExist,
 		ErrTokenInvalid,
+		ErrActivityNotBelongToUser,
+		ErrActivityNotExist,
 		ErrGroupNotBelongToUser,
 		ErrGroupNotExist,
 		ErrUserAlreadyInGroup,

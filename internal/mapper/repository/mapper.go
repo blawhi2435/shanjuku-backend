@@ -31,7 +31,7 @@ func MappingGroupDomainToSchema(domainGroup *domain.Group) (schemaGroup *postgre
 	schemaGroup = &postgres.Group{
 		ID:        domainGroup.ID,
 		CreatorID: domainGroup.CreatorID,
-		GroupName: domainGroup.Name,
+		GroupName: domainGroup.GroupName,
 	}
 	return
 }
@@ -40,7 +40,27 @@ func MappingGroupSchemaGroupToDomain(schemaGroup *postgres.Group) (domainGroup d
 	domainGroup = domain.Group{
 		ID:        schemaGroup.ID,
 		CreatorID: schemaGroup.CreatorID,
-		Name:      schemaGroup.GroupName,
+		GroupName: schemaGroup.GroupName,
+	}
+	return
+}
+
+func MappingActivityDomainToSchema(domainActivity *domain.Activity) (schemaActivity *postgres.Activity) {
+	schemaActivity = &postgres.Activity{
+		ID:           domainActivity.ID,
+		CreatorID:    domainActivity.CreatorID,
+		GroupID:      domainActivity.GroupID,
+		ActivityName: domainActivity.ActivityName,
+	}
+	return
+}
+
+func MappingActivitySchemaToDomain(schemaActivity *postgres.Activity) (domainActivity domain.Activity) {
+	domainActivity = domain.Activity{
+		ID:           schemaActivity.ID,
+		CreatorID:    schemaActivity.CreatorID,
+		GroupID:      schemaActivity.GroupID,
+		ActivityName: schemaActivity.ActivityName,
 	}
 	return
 }

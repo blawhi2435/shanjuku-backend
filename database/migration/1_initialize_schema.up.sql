@@ -75,9 +75,7 @@ CREATE TABLE IF NOT EXISTS public.activities
     id bigint NOT NULL,
     group_id bigint NOT NULL,
     creator_id bigint NOT NULL,
-    name character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
-    start_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    end_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    activity_name character varying(64) COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     created_date timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT activities_pkey PRIMARY KEY (id),
     CONSTRAINT fk_activities_group FOREIGN KEY (group_id)

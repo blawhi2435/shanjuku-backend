@@ -42,14 +42,14 @@ func (g *groupPostgresRepository) QueryByID(ctx context.Context, groupID int64) 
 	var schemaGroup postgres.Group
 
 	orm := g.db.Model(&schemaGroup)
-	orm.Where("id = ?", groupID).
+	res := orm.Where("id = ?", groupID).
 		Take(&schemaGroup)
 
-	if orm.Error == gorm.ErrRecordNotFound {
+	if res.Error == gorm.ErrRecordNotFound {
 		return domain.Group{}, cerror.ErrGroupNotExist
 	}
 
-	return repository.MappingGroupSchemaGroupToDomain(&schemaGroup), orm.Error
+	return repository.MappingGroupSchemaGroupToDomain(&schemaGroup), res.Error
 }
 
 func (g *groupPostgresRepository) QueryAssociationUsers(ctx context.Context,
@@ -72,10 +72,30 @@ func (g *groupPostgresRepository) QueryAssociationUsers(ctx context.Context,
 	return users, orm.Error
 }
 
+func (g *groupPostgresRepository) QueryAssociationActivities(ctx context.Context,
+	groupID int64) ([]domain.Activity, error) {
+
+	var schemaActivities []*postgres.Activity
+	schemaGroup := postgres.Group{
+		ID: groupID,
+	}
+
+	orm := g.db.Model(&schemaGroup)
+	orm.Association("Activities").
+		Find(&schemaActivities)
+
+	var activities []domain.Activity
+	for _, activity := range schemaActivities {
+		activities = append(activities, repository.MappingActivitySchemaToDomain(activity))
+	}
+
+	return activities, orm.Error
+}
+
 func (g *groupPostgresRepository) UpdateGroup(ctx context.Context, group *domain.Group) (int64, error) {
 
 	updateColumn := groupName{
-		GroupName: group.Name,
+		GroupName: group.GroupName,
 	}
 
 	res := g.db.Model(&postgres.Group{}).

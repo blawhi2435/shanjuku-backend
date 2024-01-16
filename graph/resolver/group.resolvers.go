@@ -16,6 +16,26 @@ import (
 	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphmodel"
 )
 
+// Users is the resolver for the users field.
+func (r *groupResolver) Users(ctx context.Context, obj *model.Group) ([]*model.User, error) {
+	groupID, err := strconv.ParseInt(obj.ID, 10, 64)
+	if err != nil {
+		return nil, cerror.GetGQLError(ctx, err)
+	}
+
+	users, err := r.GroupUsecase.QueryGroupUsers(ctx, groupID)
+	if err != nil {
+		return nil, cerror.GetGQLError(ctx, err)
+	}
+
+	modelUsers := make([]*model.User, 0)
+	for _, v := range users {
+		modelUsers = append(modelUsers, graphmodel.MappingUserDomainToGraphqlModel(v))
+	}
+
+	return modelUsers, nil
+}
+
 // CreateGroup is the resolver for the createGroup field.
 func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGroupInput) (*model.CreateGroupPayload, error) {
 	var response *model.CreateGroupPayload
@@ -26,7 +46,7 @@ func (r *mutationResolver) CreateGroup(ctx context.Context, input model.CreateGr
 	}
 
 	group, err := r.GroupUsecase.CreateGroup(ctx, &domain.Group{
-		Name: input.Name,
+		GroupName: input.Name,
 	})
 	if err != nil {
 		return response, cerror.GetGQLError(ctx, err)
@@ -55,8 +75,8 @@ func (r *mutationResolver) EditGroup(ctx context.Context, input model.EditGroupI
 		return response, cerror.GetGQLError(ctx, err)
 	}
 	group, err := r.GroupUsecase.UpdateGroup(ctx, &domain.Group{
-		ID:   groupID,
-		Name: input.Name,
+		ID:        groupID,
+		GroupName: input.Name,
 	})
 	if err != nil {
 		return response, cerror.GetGQLError(ctx, err)
@@ -185,35 +205,7 @@ func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, err
 	return modelGroup, nil
 }
 
-// Users is the resolver for the users field.
-func (r *groupResolver) Users(ctx context.Context, obj *model.Group) ([]*model.User, error) {
-	groupID, err := strconv.ParseInt(obj.ID, 10, 64)
-	if err != nil {
-		return nil, cerror.GetGQLError(ctx, err)
-	}
-
-	users, err := r.GroupUsecase.QueryGroupUsers(ctx, groupID)
-	if err != nil {
-		return nil, cerror.GetGQLError(ctx, err)
-	}
-
-	modelUsers := make([]*model.User, 0)
-	for _, v := range users {
-		modelUsers = append(modelUsers, graphmodel.MappingUserDomainToGraphqlModel(v))
-	}
-
-	return modelUsers, nil
-}
-
 // Group returns graph.GroupResolver implementation.
 func (r *Resolver) Group() graph.GroupResolver { return &groupResolver{r} }
 
-// Mutation returns graph.MutationResolver implementation.
-func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
-
-// Query returns graph.QueryResolver implementation.
-func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
-
 type groupResolver struct{ *Resolver }
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }

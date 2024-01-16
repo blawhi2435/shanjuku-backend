@@ -1,0 +1,42 @@
+type Activity {
+  id: ID!
+  groupID: ID!
+  creatorID: ID!
+  name: String!
+}
+
+extend type Query {
+  activity(id: ID!): Activity!
+}
+
+input CreateActivityInput {
+  groupID: ID! @binding(constraint: "required")
+  name: String! @binding(constraint: "required,max=32")
+}
+
+type CreateActivityPayload {
+  Activity: Activity!
+}
+
+input EditActivityInput {
+  id: ID! @binding(constraint: "required")
+  name: String! @binding(constraint: "required,max=32")
+}
+
+type EditActivityPayload {
+  Activity: Activity
+}
+
+input DeleteActivityInput {
+  id: ID! @binding(constraint: "required")
+}
+
+type DeleteActivityPayload {
+  success: Boolean!
+}
+
+extend type Mutation {
+  createActivity(input: CreateActivityInput!): CreateActivityPayload
+  editActivity(input: EditActivityInput!): EditActivityPayload
+  deleteActivity(input: DeleteActivityInput): DeleteActivityPayload
+}

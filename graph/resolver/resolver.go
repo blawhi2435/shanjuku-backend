@@ -10,22 +10,25 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	logger       *service.LoggerService
-	AuthUsecasse domain.AuthUsecase
-	UserUsecase  domain.UserUsecase
-	GroupUsecase domain.GroupUsecase
+	logger          *service.LoggerService
+	AuthUsecasse    domain.AuthUsecase
+	UserUsecase     domain.UserUsecase
+	GroupUsecase    domain.GroupUsecase
+	ActivityUsecase domain.ActivityUsecase
 }
 
 func ProvideResolver(
-	logger *service.LoggerService, 
+	logger *service.LoggerService,
 	authUsecase domain.AuthUsecase,
 	userUsecase domain.UserUsecase,
 	groupUsecase domain.GroupUsecase,
-	) *Resolver {
+	activityUsecase domain.ActivityUsecase,
+) *Resolver {
 	return &Resolver{
-		logger:       logger,
-		AuthUsecasse: authUsecase,
-		UserUsecase:  userUsecase,
-		GroupUsecase: groupUsecase,
+		logger:          logger,
+		AuthUsecasse:    authUsecase,
+		UserUsecase:     userUsecase,
+		GroupUsecase:    groupUsecase,
+		ActivityUsecase: activityUsecase,
 	}
 }

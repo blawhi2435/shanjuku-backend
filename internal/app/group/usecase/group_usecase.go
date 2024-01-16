@@ -54,12 +54,6 @@ func (g *groupUsecase) CreateGroup(ctx context.Context, group *domain.Group) (do
 
 func (g *groupUsecase) QueryByGroupID(ctx context.Context, groupID int64) (domain.Group, error) {
 
-	if ok, err := g.IsGroupExist(ctx, groupID); err != nil {
-		return domain.Group{}, err
-	} else if !ok {
-		return domain.Group{}, cerror.ErrGroupNotExist
-	}
-
 	group, err := g.groupRepository.QueryByID(ctx, groupID)
 	if err != nil {
 		return domain.Group{}, err
@@ -99,6 +93,21 @@ func (g *groupUsecase) QueryGroupUsers(ctx context.Context, groupID int64) ([]do
 	}
 
 	return users, nil
+}
+
+func (g *groupUsecase) QueryGroupActivities(ctx context.Context, groupID int64) ([]domain.Activity, error) {
+	if ok, err := g.IsGroupExist(ctx, groupID); err != nil {
+		return []domain.Activity{}, err
+	} else if !ok {
+		return []domain.Activity{}, cerror.ErrGroupNotExist
+	}
+
+	activities, err := g.groupRepository.QueryAssociationActivities(ctx, groupID)
+	if err != nil {
+		return []domain.Activity{}, err
+	}
+
+	return activities, nil
 }
 
 func (g *groupUsecase) UpdateGroup(ctx context.Context, group *domain.Group) (domain.Group, error) {

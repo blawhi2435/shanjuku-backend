@@ -1,5 +1,6 @@
 type Group {
   id: ID!
+  creatorID: ID!
   name: String!
   users: [User!]
 }

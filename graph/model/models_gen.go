@@ -2,6 +2,22 @@
 
 package model
 
+type Activity struct {
+	ID        string `json:"id"`
+	GroupID   string `json:"groupID"`
+	CreatorID string `json:"creatorID"`
+	Name      string `json:"name"`
+}
+
+type CreateActivityInput struct {
+	GroupID string `json:"groupID"`
+	Name    string `json:"name"`
+}
+
+type CreateActivityPayload struct {
+	Activity *Activity `json:"Activity"`
+}
+
 type CreateGroupInput struct {
 	Name string `json:"name"`
 }
@@ -10,12 +26,29 @@ type CreateGroupPayload struct {
 	Group *Group `json:"group"`
 }
 
+type DeleteActivityInput struct {
+	ID string `json:"id"`
+}
+
+type DeleteActivityPayload struct {
+	Success bool `json:"success"`
+}
+
 type DeleteGroupInput struct {
 	ID string `json:"id"`
 }
 
 type DeleteGroupPayload struct {
 	Success bool `json:"success"`
+}
+
+type EditActivityInput struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type EditActivityPayload struct {
+	Activity *Activity `json:"Activity,omitempty"`
 }
 
 type EditGroupInput struct {
@@ -28,9 +61,10 @@ type EditGroupPayload struct {
 }
 
 type Group struct {
-	ID    string  `json:"id"`
-	Name  string  `json:"name"`
-	Users []*User `json:"users,omitempty"`
+	ID        string  `json:"id"`
+	CreatorID string  `json:"creatorID"`
+	Name      string  `json:"name"`
+	Users     []*User `json:"users,omitempty"`
 }
 
 type InviteUserInput struct {

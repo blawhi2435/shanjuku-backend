@@ -35,7 +35,7 @@ func (u *userPostgresRepository) QueryByAccount(ctx context.Context, account str
 		Where("account = ?", account).
 		Take(&schemaUser)
 
-	if orm.Error == gorm.ErrRecordNotFound {
+	if res.Error == gorm.ErrRecordNotFound {
 		return domain.User{}, cerror.ErrUserNotExist
 	}
 
@@ -49,7 +49,7 @@ func (u *userPostgresRepository) QueryByID(ctx context.Context, id int64) (domai
 		Where("id = ?", id).
 		Take(&schemaUser)
 
-	if orm.Error == gorm.ErrRecordNotFound {
+	if res.Error == gorm.ErrRecordNotFound {
 		return domain.User{}, cerror.ErrUserNotExist
 	}
 
