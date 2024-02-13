@@ -14,6 +14,7 @@ import (
 	"github.com/blawhi2435/shanjuku-backend/internal/cerror"
 	"github.com/blawhi2435/shanjuku-backend/internal/ctxtool"
 	"github.com/blawhi2435/shanjuku-backend/internal/mapper/graphmodel"
+	"github.com/blawhi2435/shanjuku-backend/internal/util"
 )
 
 // CreateActivity is the resolver for the createActivity field.
@@ -29,10 +30,12 @@ func (r *mutationResolver) CreateActivity(ctx context.Context, input model.Creat
 	if err != nil {
 		return response, cerror.GetGQLError(ctx, err)
 	}
-	
+
 	activity, err := r.ActivityUsecase.CreateActivity(ctx, &domain.Activity{
 		ActivityName: input.Name,
 		GroupID:      groupID,
+		Days:         input.Days,
+		StartDate:    util.ParseDateTime(input.StartDate),
 	})
 
 	if err != nil {
@@ -65,6 +68,8 @@ func (r *mutationResolver) EditActivity(ctx context.Context, input model.EditAct
 	activity, err := r.ActivityUsecase.UpdateActivityName(ctx, &domain.Activity{
 		ID:           activityID,
 		ActivityName: input.Name,
+		Days:         input.Days,
+		StartDate:    util.ParseDateTime(input.StartDate),
 	})
 	if err != nil {
 		return response, cerror.GetGQLError(ctx, err)

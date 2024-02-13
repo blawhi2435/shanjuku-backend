@@ -97,6 +97,8 @@ func (a *activityUsecase) UpdateActivityName(ctx context.Context,
 	}
 
 	currentActivity.ActivityName = activity.ActivityName
+	currentActivity.Days = activity.Days
+	currentActivity.StartDate = activity.StartDate
 
 	return currentActivity, nil
 }

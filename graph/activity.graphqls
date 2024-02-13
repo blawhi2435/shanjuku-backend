@@ -3,6 +3,8 @@ type Activity {
   groupID: ID!
   creatorID: ID!
   name: String!
+  Days: Int!
+  StartDate: String!
 }
 
 extend type Query {
@@ -12,6 +14,8 @@ extend type Query {
 input CreateActivityInput {
   groupID: ID! @binding(constraint: "required")
   name: String! @binding(constraint: "required,max=32")
+  days: Int! @binding(constraint: "required,max=7")
+  startDate: String! @binding(constraint: "required")
 }
 
 type CreateActivityPayload {
@@ -21,6 +25,8 @@ type CreateActivityPayload {
 input EditActivityInput {
   id: ID! @binding(constraint: "required")
   name: String! @binding(constraint: "required,max=32")
+  days: Int! @binding(constraint: "required,max=7")
+  startDate: String! @binding(constraint: "required")
 }
 
 type EditActivityPayload {

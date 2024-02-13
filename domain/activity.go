@@ -10,8 +10,8 @@ type Activity struct {
 	GroupID      int64     `json:"group_id"`
 	CreatorID    int64     `json:"creator_id"`
 	ActivityName string    `json:"activity_name"`
+	Days         int       `json:"days"`
 	StartDate    time.Time `json:"start_date"`
-	EndDate      time.Time `json:"end_date"`
 }
 
 type ActivityPostgreRepository interface {

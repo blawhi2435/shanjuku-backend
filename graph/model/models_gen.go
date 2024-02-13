@@ -7,11 +7,15 @@ type Activity struct {
 	GroupID   string `json:"groupID"`
 	CreatorID string `json:"creatorID"`
 	Name      string `json:"name"`
+	Days      int    `json:"Days"`
+	StartDate string `json:"StartDate"`
 }
 
 type CreateActivityInput struct {
-	GroupID string `json:"groupID"`
-	Name    string `json:"name"`
+	GroupID   string `json:"groupID"`
+	Name      string `json:"name"`
+	Days      int    `json:"days"`
+	StartDate string `json:"startDate"`
 }
 
 type CreateActivityPayload struct {
@@ -43,8 +47,10 @@ type DeleteGroupPayload struct {
 }
 
 type EditActivityInput struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Days      int    `json:"days"`
+	StartDate string `json:"startDate"`
 }
 
 type EditActivityPayload struct {

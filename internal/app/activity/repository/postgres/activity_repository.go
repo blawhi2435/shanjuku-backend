@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/blawhi2435/shanjuku-backend/database/postgres"
 	"github.com/blawhi2435/shanjuku-backend/domain"
@@ -12,7 +13,9 @@ import (
 )
 
 type activityName struct {
-	ActivityName string `structs:"activity_name"`
+	ActivityName string    `structs:"activity_name"`
+	Days         int       `structs:"days"`
+	StartDate    time.Time `structs:"start_date"`
 }
 
 type activityPostgresRepository struct {
@@ -27,7 +30,7 @@ func (a *activityPostgresRepository) InsertActivity(ctx context.Context, activit
 
 	schemaActivity := repository.MappingActivityDomainToSchema(activity)
 	orm := a.db.Model(&schemaActivity)
-	res := orm.Select("id", "group_id", "creator_id", "activity_name").
+	res := orm.Select("id", "group_id", "creator_id", "activity_name", "days", "startDate").
 		Create(&schemaActivity)
 
 	return res.Error
@@ -36,7 +39,7 @@ func (a *activityPostgresRepository) InsertActivity(ctx context.Context, activit
 func (a *activityPostgresRepository) QueryByID(ctx context.Context, activityID int64) (domain.Activity, error) {
 	var schemaActivity postgres.Activity
 	orm := a.db.Model(&schemaActivity)
-	res := orm.Select("id", "group_id", "creator_id", "activity_name").
+	res := orm.Select("id", "group_id", "creator_id", "activity_name", "days", "startDate").
 		Where("id = ?", activityID).
 		Take(&schemaActivity)
 
@@ -52,6 +55,8 @@ func (a *activityPostgresRepository) UpdateActivityName(ctx context.Context,
 
 	updateColumn := activityName{
 		ActivityName: activity.ActivityName,
+		Days:         activity.Days,
+		StartDate:    activity.StartDate,
 	}
 
 	res := a.db.Model(&postgres.Activity{}).

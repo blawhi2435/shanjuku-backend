@@ -1,0 +1,3 @@
+ALTER TABLE public.groups
+DROP COLUMN IF EXISTS days,
+DROP COLUMN IF EXISTS start_date;

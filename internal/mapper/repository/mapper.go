@@ -51,6 +51,8 @@ func MappingActivityDomainToSchema(domainActivity *domain.Activity) (schemaActiv
 		CreatorID:    domainActivity.CreatorID,
 		GroupID:      domainActivity.GroupID,
 		ActivityName: domainActivity.ActivityName,
+		Days:         domainActivity.Days,
+		StartDate:    domainActivity.StartDate,
 	}
 	return
 }
@@ -61,6 +63,8 @@ func MappingActivitySchemaToDomain(schemaActivity *postgres.Activity) (domainAct
 		CreatorID:    schemaActivity.CreatorID,
 		GroupID:      schemaActivity.GroupID,
 		ActivityName: schemaActivity.ActivityName,
+		Days:         schemaActivity.Days,
+		StartDate:    schemaActivity.StartDate,
 	}
 	return
 }
